@@ -8,7 +8,7 @@
 
 ## 0. How to use this doc
 
-- **Read top-to-bottom once** to get the mental model, then treat §6 (roadmap) as the working plan and §8 (learnings log) as the running journal.
+- **Read top-to-bottom once** to get the mental model. **§6a is the live working plan** (Flutter + Claude Code, greenfield); §6 is the platform-agnostic version behind it. §8 (learnings log) is the running journal.
 - Anything we discover — a format that works, a token count, an eval result, a prompt that broke an agent — gets a dated entry in §8.
 - Decisions that are still open live in §7. Move them to a learning once decided.
 - This is a knowledge doc, not the spec. Product/design decisions are NOT made here unilaterally — they get raised and agreed first.
@@ -405,16 +405,63 @@ A menu, not a mandate — sequence in §6.
 
 ---
 
+## 6a. Concrete build plan — Flutter + Claude Code (greenfield) ← LIVE WORKING PLAN
+
+> Decisions locked 2026-05-21 (§7): **Flutter/Dart** (one codebase for mobile + web), **greenfield**, **Claude Code** first-class. Starting point: **Figma variables + tokens already done.** Target: "Razorpay Blade level" = the full ecosystem, not just a widget library.
+
+### "Blade level" decomposed (what we're actually aiming at)
+Core themeable tokens · typed cross-platform components · code guardrails · machine-readable knowledgebase · agentic **consumer** surface (MCP) · agentic **contributor** surface (skills) · design-side loop · adoption telemetry · governance.
+
+### Blade (React) → our stack (Flutter) translation
+| Concern | Blade (React) | **Our stack (Flutter)** |
+|---|---|---|
+| Components | React Web + RN (two renderers) | **Flutter Widgets — mobile + web + desktop, ONE codebase** |
+| Contract language | TS types + JSDoc | **Dart classes + enums + `///` doc comments** |
+| Tokens → code | Style Dictionary → JS | DTCG → Style Dictionary → **Dart `ThemeExtension`** |
+| Theming / white-label | theme provider | `ThemeData` + `ThemeExtension` (swap = re-brand) |
+| Component catalog | Storybook | **Widgetbook** |
+| Metadata extraction | react-docgen | **`package:analyzer`-based generator** |
+| Code guardrails | eslint-plugin-blade | **`custom_lint` + analyzer rules**, `dart analyze/format` |
+| Visual / regression | Jest + Chromatic | **golden tests (`flutter_test` + alchemist)** — deterministic pixel diffs *built in* |
+| Package registry | npm | **pub.dev** |
+| MCP server | Node/TS | **Dart (`mcp_dart`)** — keeps the stack one language |
+| Agent host | Cursor-first | **Claude Code**: `CLAUDE.md` + `.claude/skills/` + `.mcp.json`, shipped as a **plugin** |
+| Figma → code | Code Connect (React) | ⚠️ **no Flutter Code Connect** → MCP-docs + agent writes Flutter, verified by goldens |
+
+### Flutter-native superpowers (we're *advantaged* vs Blade here)
+1. **Cross-platform is free** — one codebase = mobile + web (+ desktop); no Web/RN dual maintenance or abstraction layer.
+2. **Golden tests = a built-in eval / visual-regression harness.** Indeed & Spotify had to *build* custom frameworks to compare generated UI visually (§2d); Flutter ships deterministic pixel snapshots. → the eval loop (Phase H) is partly free, and skills can **self-verify by running goldens and reading the diff** (replaces Blade's "verify-with-browser"). The determinism we wanted (§2f) is native.
+3. **Dart enums + analyzer make the §4a contract cleaner than TS** — enums are first-class exhaustive variant axes; the analyzer exposes constructor params, defaults, and doc comments → the knowledgebase generates deterministically.
+
+### The process (A→H). **Start with a thin vertical slice — ~5 widgets end-to-end — not the whole library first.**
+- **A · Token pipeline:** Figma variables → DTCG → Style Dictionary → Dart `ThemeExtension` (primitive→semantic→component layers; theming/modes). Automate on Figma change. *(Figma half already done.)*
+- **B · Core widgets (the lift):** ~5 first (Button, Text, TextField, Card, Icon) — Dart-typed APIs with `///` docs + enums, accessible, in **Widgetbook**, with **golden tests**; per-widget API-decision docs; publish to pub.dev with versioning.
+- **C · Guardrails before agents write code:** `custom_lint` rules enforcing token/widget usage — catches human *and* agent mistakes.
+- **D · Knowledgebase:** `package:analyzer` generator → one Dart-types-in-Markdown doc per widget (Blade's exact shape, §4a) + DTCG token docs.
+- **E · MCP server (Dart):** tools mirroring Blade — onboarding, scaffold (`flutter create` + dep), generate-`CLAUDE.md`-rules, get widget/pattern/general docs. Validate *"build me a login screen using <DS>"* end-to-end.
+- **F · Foundations + always-on (the quality unlock, §4b):** `CLAUDE.md` carries always-on foundations; a **foundations skill** progressively discloses spacing/typography/composition + `quality.md`.
+- **G · Maintainer skills (`.claude/skills/`):** create/update/review widget, write golden+widget tests, write API decision, **verify-with-goldens**, draft PR, migrations. Bundle E+F+G as **one Claude Code plugin** = our distribution unit (the `npx blade-mcp` equivalent).
+- **H · Loop + governance:** Widgetbook coverage, eval harness (goldens do the heavy lifting), trust levels + a **Context Engineer** owner (§2g). *Design-side Figma loop is partly blocked by no Flutter Code Connect → lean code-side first.*
+
+**Shape:** A→C = "real design system" (heavy lift). D→F = where it becomes *agentic* (the differentiator; fast once B is typed). G→H = ecosystem maturity.
+
+**The one honest gap:** Figma→Flutter codegen is the place Flutter trails React (no official Code Connect). Mitigation = our preferred architecture regardless (serve docs, agent writes, goldens verify), so the loss is smaller than it looks.
+
+---
+
 ## 7. Open questions / decisions to make
 
-- **Platform & framework scope?** Web only, or cross-platform (Blade does React Web + RN)? Affects everything downstream. *(needs decision — do not assume)*
-- **Build on an existing DS or greenfield?** Are we wrapping an existing component library or starting fresh?
-- **Which agents/IDEs are first-class?** Claude Code, Cursor, Copilot, Claude Desktop — drives the rules/skills conventions.
-- **Component metadata contract** — *researched (§4a); proposed contract on the table.* Decision left: **confirm the exact field set** + whether we serve whole-MD-with-TS-types (Blade-style) or chunked-JSON.
+**✅ Decided 2026-05-21 (see §6a for the resulting plan):**
+- **Platform & framework scope?** → **Flutter / Dart** — one codebase for **mobile + web** (Flutter handles cross-platform; no React/RN dual-rendering needed).
+- **Build on an existing DS or greenfield?** → **Greenfield** — build widgets from scratch on our Figma tokens (full control over the typed Dart API contract).
+- **Which agents/IDEs are first-class?** → **Claude Code** (`CLAUDE.md` + `.claude/skills/` + `.mcp.json`; ship the agentic layer as a Claude Code plugin). Others later.
+
+**Still open:**
+- **Component metadata contract** — *researched (§4a); proposed contract on the table.* Decision left: **confirm the exact field set** (Dart classes/enums/`///` → Markdown, Blade-style) vs chunked-JSON.
 - **Knowledgebase format** — *researched (§4b); answer is "benchmark our corpus."* Decision left: **run the benchmark and pick the winner** before standardizing.
 - **Knowledgebase generation source** — from TS types (`react-docgen`)? CEM analyzer? Story files? Lean toward generated-from-TS + author only judgment fields (constraints/do-not/examples). *(confirm)*
-- **Hosting/distribution** — public npm like Blade, or private registry?
-- **Where Figma fits** — do we own a Figma library + Code Connect, or consume an existing one?
+- **Hosting/distribution** — widgets on **pub.dev**; agentic layer as a Claude Code plugin. Public or private? *(confirm)*
+- **Where Figma fits** — ⚠️ **Figma Code Connect does not support Flutter** (open feature request; it covers React/SwiftUI/Compose/HTML). So the design→code bridge is weaker for us → rely on *MCP-serves-docs + agent-writes-Flutter + golden-test verification* (our preferred architecture anyway). Revisit if Code Connect adds Flutter.
 
 ---
 
@@ -429,6 +476,7 @@ A menu, not a mandate — sequence in §6.
 - **2026-05-21 — [research: Southleft] — the infra under uSpec + a counter-position worth holding.** Southleft (Tom Pitre) makes **Figma Console MCP** ("**your design system as an API**" — extraction/creation/debugging/**bidirectional token sync**, the local Desktop-Bridge model) which uSpec runs on; stack = *Console MCP → uSpec → agent*. Their **Context-Based Design Systems** framework argues **"context, not data, is the unit of value"** and — pointedly — **"context beats autonomy"** ("the teams that win aren't the ones with the most agents"). New role: the **Context Engineer** owns the *trust layer* (trace why/who/what-was-authorized) — a human owner for our FM3 governance. They + **Brad Frost** run the AI&Design-Systems course, so §2d/uSpec/Console-MCP all trace to this group. Reframes our north-star: agentic-first = *legible & stewardable by agents*, not *maximally autonomous*. Captured in §2g.
 - **2026-05-21 — [deep dive: uSpec source] — read the actual `redongreen/uSpec` repo (skills/references/CLI/figma-plugin/docs); it's our closest open-source blueprint.** Six directly-reusable patterns captured in §2f: (1) **skill = thin SKILL.md procedure + thick `references/` instruction file**, with Step 1 = "read the reference" (two-field frontmatter: name + quoted-trigger description); (2) **`create-*` (render to Figma) vs `extract-*` (write JSON) families sharing one canonical instruction file** per domain ("any improvement must be made in both places"); (3) **the agent↔tool contract is a validated, versioned schema** — `_base.json` with a prose contract + typed producer + Ajv pre-flight gate that aborts before spending LLM tokens; (4) judgment-vs-precision made **quantitative** (deterministic 9-phase plugin emits a superset `_base.json`; LLM only interprets; det/AI ratio published per skill); (5) the **orchestrator pattern** — dictionary pass first → parallel specialist fan-out → typed 3-class reconciliation gate → render (byte-identical output, diffable via `sourceHash`); (6) **one source, many hosts** via CLI token-rewriting into `.cursor/.claude/.agents` skills dirs + MCP-adapter table. Plus: canonical vocabulary catalog ("don't reinvent"), mistakes-as-data, designer-in-the-loop as frozen evidence, two coexisting source-of-truth models, local-first sandbox.
 - **2026-05-21 — [research: Uber/uSpec] — Uber is doing the *reverse* direction (design → spec).** Their Base DS spans 7 implementation stacks; **uSpec** (open, by Ian Guisard) is a "visual-to-technical-spec compiler": an agent crawls the live Figma component tree via the **open-source Figma Console MCP** (local Figma Desktop over WebSocket) and renders finished spec pages *back into Figma*, weeks→minutes. Four transferable ideas: (1) a **second agent surface** = generating/maintaining design specs & docs, not just code; (2) **judgment-vs-precision split** — LLM interprets, deterministic scripts render; (3) **local-first MCP** is the enterprise unlock (no proprietary data leaves the network) + a **GenAI gateway with PII redaction** for governance; (4) **every skill loads its own reference docs/schemas before acting** so the agent selects from documented APIs instead of guessing — the recurring pattern across Blade, Figma, Indeed *and* Uber. Captured in §2e.
+- **2026-05-21 — [decisions locked + Flutter plan] — platform/build/host chosen → §6a is now the live working plan.** Locked: **Flutter/Dart** (one codebase, mobile + web), **greenfield**, **Claude Code** first-class. Translated the Blade(React) blueprint to a Flutter stack (DTCG→Style Dictionary→`ThemeExtension`, Widgetbook, `package:analyzer` extraction, `custom_lint`, golden tests, pub.dev, Dart `mcp_dart` server, `.claude/skills` + `CLAUDE.md` + plugin). Three Flutter advantages over Blade: cross-platform is free, **golden tests give a built-in visual-eval harness**, Dart enums/analyzer make the §4a contract cleaner. One gap: **no Figma Code Connect for Flutter** → rely on MCP-serves-docs + agent-writes-Flutter + golden verification. Process = thin vertical slice of ~5 widgets end-to-end (A→H in §6a), not whole-library-first.
 - **2026-05-21 — [research #3: THE big one] — an MCP solves component *retrieval*, not output *quality*.** Even Indeed's working component MCP produced broken spacing/typography/icons, because MCP is on-demand and prompts never ask for foundations. Fix that worked: **MCP (authoritative, on-demand) + a foundations Skill (`SKILL.md`, progressive context disclosure of spacing/hierarchy/composition/`quality.md`) as ONE system.** Foundations should be **evidence-based** (audit production codebases for the tokens/recipes that actually recur), and **calibration runs expose stale docs** the LLM will dutifully reproduce. This reframed inventory item #3→#4 and Phase 1/2 in the roadmap.
 
 ---
