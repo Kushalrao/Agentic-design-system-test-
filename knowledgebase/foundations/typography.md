@@ -1,139 +1,177 @@
 # Typography
 
-> Hierarchy guide — when to use each type style.
-> Load this file before setting any text style in a widget.
+> Load before setting any text style in a widget.
 
 ---
 
-## Font
-
-Primary font is **Lexend Deca** (`Foundation.fontFamilyLexendDeca`). Two display
-fonts are also available for brand moments: `Foundation.fontFamilyGtUltraMedian`
-and `Foundation.fontFamilyGtFlaire`.
-
-The font is registered via `ScapiaTheme.light()` on `ThemeData.fontFamily`. Do not
-pass `fontFamily` inside individual `TextStyle` calls — it is inherited from the theme.
-
----
-
-## Style hierarchy
-
-| Style | Size | Weight | Line height | Use when |
-|---|---|---|---|---|
-| `display` | 47 dp | 700 bold | 63 | Hero statement, full-screen takeover, campaign headline |
-| `headingXl` | 41 dp | 700 bold | 55 | Screen-level hero heading |
-| `headingLg` | 35 dp | 700 bold | 47 | Page title, primary screen header |
-| `headingMd` | 29 dp | 700 bold | 39 | Section heading, modal title |
-| `headingSm` | 25 dp | 700 bold | 35 | Card heading, group label, dialog title |
-| `titleLg` | 23 dp | 600 semibold | 29 | Sub-section title, collapsible header |
-| `titleMd` | 19 dp | 600 semibold | 27 | Button label, prominent CTA, list item title |
-| `bodyLg` | 17 dp | 500 medium | 25 | Primary body text, form field value |
-| `bodyMd` | 15 dp | 500 medium | 23 | Supporting body text, list item subtitle, helper text |
-| `caption` | 13 dp | 400 regular | 21 | Metadata, timestamp, category label, fine print |
-| `captionSm` | 12 dp | 400 regular | 19 | Legal copy, overline, reference IDs |
-
----
-
-## How to build a TextStyle
-
-`TypographyScale` exposes only the numeric constants — assemble them into a
-`TextStyle` at the widget level.
+## The rule in one line
 
 ```dart
-import 'package:scapia_tokens/scapia_tokens.dart';
-
-// Correct — compose from TypographyScale tokens
-TextStyle(
-  fontSize:   TypographyScale.bodyLgSize,            // 17
-  fontWeight: FontWeight.w500,                        // == bodyLgWeight
-  height:     TypographyScale.bodyLgLineheight /
-              TypographyScale.bodyLgSize,             // Flutter height multiplier
-)
-
-// Wrong — hardcoded values
-TextStyle(fontSize: 17, fontWeight: FontWeight.w500)
+// Every text in the DS looks like this — no exceptions
+Text(label, style: TypographyScale.pMedium.copyWith(color: colors.contentPrimary))
 ```
 
-> **FontWeight map:** `Foundation.fontWeightRegular` (400) → `FontWeight.w400`,
-> `fontWeightMedium` (500) → `FontWeight.w500`, `fontWeightSemibold` (600) →
-> `FontWeight.w600`, `fontWeightBold` (700) → `FontWeight.w700`,
-> `fontWeightExtrabold` (800) → `FontWeight.w800`, `fontWeightBlack` (900) → `FontWeight.w900`.
-
-> **Line height in Flutter:** Flutter's `TextStyle.height` is a multiplier over
-> `fontSize`. Convert: `height = lineheight / fontSize`.
-> Example: `titleMd` → `27 / 19 = 1.42`.
+Never assemble `TextStyle(fontSize:..., fontWeight:..., height:...)` from raw numbers. Always start from a named static.
 
 ---
 
-## Usage rules by style
+## Font families
 
-### `display` / `headingXl` / `headingLg` — impact moments
+| Family | Token | Use when |
+|---|---|---|
+| **Lexend Deca** | `Foundation.fontFamilyLexendDeca` | Everything — UI, body, headings. Default via theme. |
+| **GT Ultra Median** | `Foundation.fontFamilyGtUltraMedian` | Promo moments — campaign headlines, feature announcements |
+| **GT Flaire** | `Foundation.fontFamilyGtFlaire` | High-impact display — hero takeovers, brand splash screens |
 
-Large headline styles for hero screens, onboarding, and campaign pages. Use sparingly:
-- `display` (47): full-screen takeover or brand splash — one per screen, max.
-- `headingXl` (41): opening hero of an important screen.
-- `headingLg` (35): the primary heading of a standard screen.
+Lexend Deca is set on `ThemeData.fontFamily` in `ScapiaTheme.light()`. Do not pass it on individual `TextStyle` calls — it inherits. GT Ultra Median and GT Flaire must be set explicitly via the `Pr-*` and `Dp-*` statics (they include `fontFamily`).
 
-### `headingMd` / `headingSm` — structural hierarchy
+---
 
-- `headingMd` (29): section headings within a scrollable screen or modal.
-- `headingSm` (25): card headings, group labels, dialog titles.
+## Style catalogue
 
-### `titleLg` / `titleMd` — interactive and action text
+Names match Figma text style names exactly. When the designer says "use P-Medium", you use `TypographyScale.pMedium`.
 
-- `titleLg` (23): sub-section or collapsible headers.
-- `titleMd` (19): **button labels**, CTAs, prominent interactive text.
+### P — Paragraph (Lexend Deca / Regular / w400)
+Body copy. Reading-optimised. No emphasis.
 
-### `bodyLg` / `bodyMd` — readable prose
+| Static | Size | lh | Use when |
+|---|---|---|---|
+| `TypographyScale.pSmall` | 13 | 21 | Metadata, timestamps, transaction IDs, fine print |
+| `TypographyScale.pMedium` | 15 | 23 | Supporting body — subtitles, helper text, card descriptions |
+| `TypographyScale.pLarge` | 17 | 25 | Primary body copy, form field values |
+| `TypographyScale.pExtra` | 19 | 29 | Elevated body — introductory paragraphs, featured descriptions |
+| `TypographyScale.pMax` | 23 | 35 | Large prose, pull quotes |
 
-- `bodyLg` (17): primary body copy, form field values — default for most readable text.
-- `bodyMd` (15): secondary detail — subtitles, helper text, descriptions.
+### Shd — Sub-heading (Lexend Deca / Medium / w500)
+Prominent labels. Not a heading, not plain body. Use for UI control labels and list item titles.
 
-### `caption` / `captionSm` — metadata
+| Static | Size | lh | Use when |
+|---|---|---|---|
+| `TypographyScale.shdSmall` | 15 | 23 | List item title, chip text, tab label |
+| `TypographyScale.shdMedium` | 17 | 23 | Card sub-title, section label, prominent list title |
 
-- `caption` (13): timestamps, categories, transaction IDs, short metadata.
-- `captionSm` (12): legal text, overlines, reference codes.
+### Hd — Heading (Lexend Deca / SemiBold–Bold)
+Structural hierarchy. One heading level per section — do not stack two heading levels adjacent.
+
+| Static | Size | Weight | lh | Use when |
+|---|---|---|---|---|
+| `TypographyScale.hdSmall` | 17 | 600 | 23 | Compact heading, inline action label |
+| `TypographyScale.hdMedium` | 19 | 600 | 27 | **Button labels**, prominent CTAs, list item heading |
+| `TypographyScale.hdLarge` | 23 | 700 | 35 | Sub-section title, collapsible header |
+| `TypographyScale.hdExtra` | 27 | 700 | 39 | Section heading, modal title |
+| `TypographyScale.hdMax` | 35 | 700 | 47 | Page title, primary screen header |
+| `TypographyScale.hdRare` | 41 | 700 | 55 | Screen-level hero heading |
+
+### Lb — Label (Lexend Deca / Regular / w400)
+Compact metadata. Tighter than P-Small. Use for captions, overlines, reference codes.
+
+| Static | Size | lh | Use when |
+|---|---|---|---|
+| `TypographyScale.lbSmall` | 12 | 19 | Legal copy, overline, reference IDs |
+| `TypographyScale.lbRegular` | 13 | 21 | Category label, timestamps, short metadata |
+
+### Pr — Promo (GT Ultra Median / Regular / w400)
+Brand/marketing moments only. Never use for UI chrome.
+
+| Static | Size | lh | Use when |
+|---|---|---|---|
+| `TypographyScale.prMax` | 47 | 63 | Hero statement, campaign headline |
+| `TypographyScale.prExtra` | 35 | 47 | Prominent promo heading |
+| `TypographyScale.prBase` | 29 | 43 | Promo sub-heading |
+
+### Dp — Display (GT Flaire / Bold–Medium)
+Highest-impact moments. One per screen, maximum.
+
+| Static | Size | Weight | lh | Use when |
+|---|---|---|---|---|
+| `TypographyScale.dpMax` | 47 | 700 | 63 | Full-screen takeover, brand splash |
+| `TypographyScale.dpExtra` | 35 | 700 | 47 | High-impact display heading |
+| `TypographyScale.dpBase` | 29 | 500 | 43 | Display sub-heading |
+
+---
+
+## Choosing between similar styles
+
+**P-Medium vs Shd-Small** — both are 15px/lh23, different weight:
+- Use `pMedium` (w400) for reading — descriptions, helper text, subtitles
+- Use `shdSmall` (w500) for scanning — list item titles, labels the user acts on
+
+**P-Large vs Shd-Medium vs Hd-Small** — all near 17px, three weights:
+- `pLarge` (w400): body copy, form values — the user reads it
+- `shdMedium` (w500): prominent label — the user scans it
+- `hdSmall` (w600): compact heading — the user orients by it
+
+**Hd-Medium vs Hd-Large** — button labels vs. collapsible headers:
+- `hdMedium` (19/600): interactive — any tappable label
+- `hdLarge` (23/700): structural — section breaks, collapsible group headers
+
+**When to reach for Lb-* vs P-Small** — both 12–13px:
+- `lbRegular` / `lbSmall`: metadata that annotates other content (timestamps, IDs, overlines)
+- `pSmall`: reading copy that happens to be small (fine print, terms, helper paragraphs)
 
 ---
 
 ## Color pairing
 
-Typography tokens carry no color. Always supply color from `ColorScale`:
+Typography statics carry no color. Always supply it via `.copyWith(color: ...)`.
 
-| Context | Color token |
+| Context | Token |
 |---|---|
-| Default body text | `contentPrimary` |
-| Supporting / secondary text | `contentSecondary` |
-| Disabled / placeholder text | `contentTertiary` |
-| Text on brand orange or dark navy fill | `backgroundPrimary` (white) |
-| Feedback / error message | `feedbackNegative` |
-| Feedback / success label | `feedbackPositive` |
-| Feedback / warning label | `feedbackWarning` |
+| Default body / heading | `colors.contentPrimary` |
+| Supporting / secondary | `colors.contentSecondary` |
+| Disabled / placeholder | `colors.contentTertiary` |
+| On brand orange (`brandPrimary`) fill | `colors.backgroundPrimary` |
+| On dark navy (`brandDark`) fill | `colors.backgroundPrimary` |
+| Error / destructive message | `colors.feedbackNegative` |
+| Success label | `colors.feedbackPositive` |
+| Warning / caution label | `colors.feedbackWarning` |
+
+---
+
+## Flutter implementation notes
+
+**Line height** — `TextStyle.height` is a multiplier, not pixels. Each static computes it correctly (`lh / size`). Do not recompute it.
+
+**Leading distribution** — every static sets `leadingDistribution: TextLeadingDistribution.even` to match Figma's CSS-style half-leading. Without this, text sits lower than the design.
+
+**Text decoration** — every static sets `decoration: TextDecoration.none` to prevent browser default underlines on Flutter web.
+
+**These three properties are already baked in.** You do not need to set them manually. `.copyWith()` preserves them unless you explicitly override.
 
 ---
 
 ## DO / DON'T
 
 ```dart
-// DO — list tile with correct hierarchy
-ListTile(
-  title: Text(merchantName, style: TextStyle(
-    fontSize:   TypographyScale.bodyLgSize,
-    fontWeight: FontWeight.w500,
-    height:     TypographyScale.bodyLgLineheight / TypographyScale.bodyLgSize,
-    color:      colors.contentPrimary,
-  )),
-  subtitle: Text(dateString, style: TextStyle(
-    fontSize:   TypographyScale.captionSize,
-    fontWeight: FontWeight.w400,
-    height:     TypographyScale.captionLineheight / TypographyScale.captionSize,
-    color:      colors.contentSecondary,
-  )),
+// DO — named static + color via copyWith
+Text(
+  hotelName,
+  style: TypographyScale.pMedium.copyWith(color: colors.contentPrimary),
 )
 
-// DON'T — mixed hardcoded and token values
-ListTile(
-  title: Text(merchantName, style: TextStyle(fontSize: 17)),
-  subtitle: Text(dateString, style: TextStyle(fontSize: 12, color: Colors.grey)),
+// DO — button label
+Text(
+  'Book now',
+  style: TypographyScale.hdMedium.copyWith(color: colors.backgroundPrimary),
+)
+
+// DON'T — inline assembly from raw numbers
+Text(
+  hotelName,
+  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, height: 1.53),
+)
+
+// DON'T — hardcoded font family on a Lexend Deca element
+Text(
+  label,
+  style: TextStyle(fontFamily: 'Lexend Deca', fontSize: 15),
 )
 ```
+
+---
+
+## What NOT to use
+
+- Mixing `Pr-*` or `Dp-*` styles inside UI chrome — these are brand-moment only.
+- Two heading levels in the same visual group — creates ambiguous hierarchy.
+- `Hd-*` styles for body copy — weight implies interaction or structure; misuse breaks the user's scanning pattern.

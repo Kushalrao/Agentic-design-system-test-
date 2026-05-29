@@ -1,27 +1,30 @@
 # Spacing
 
-> Composition recipes — when and how to combine spacing tokens in layouts.
-> Load this file before writing any widget layout code.
+> Load before writing any widget layout code.
+
+---
+
+## The rule in one line
+
+Every gap, padding, and margin comes from `SpacingScale`. No raw numbers, no arithmetic.
 
 ---
 
 ## The scale
 
-All spacing comes from `SpacingScale`. Source of truth: Figma › Seasonal DLS › Containers › Spacing.
-
 | Token | Value | Use when |
 |---|---|---|
-| `SpacingScale.spaceNone` | 0 dp | Explicitly zero — remove default padding/margin |
-| `SpacingScale.space2xs` | 2 dp | Hairline gap, icon-to-badge nudge, pixel-level correction |
-| `SpacingScale.spaceXs` | 5 dp | Tight icon-to-label gap, compact chip internal padding |
-| `SpacingScale.spaceSm` | 7 dp | Internal padding for small components (tag, badge, chip) |
-| `SpacingScale.spaceMd` | 9 dp | Standard internal gap — default between siblings |
-| `SpacingScale.spaceMdLg` | 13 dp | Slightly relaxed inset, e.g. a card with more visual weight |
-| `SpacingScale.spaceLg` | 15 dp | Standard component internal padding (vertical) |
+| `SpacingScale.spaceNone` | 0 dp | Explicitly remove default padding — intentional zero |
+| `SpacingScale.space2xs` | 2 dp | Icon-to-badge nudge, hairline gap, pixel-level alignment |
+| `SpacingScale.spaceXs` | 5 dp | Icon-to-label gap, tight chip internal padding |
+| `SpacingScale.spaceSm` | 7 dp | Internal padding for small components — tag, badge, chip |
+| `SpacingScale.spaceMd` | 9 dp | Standard gap between sibling elements |
+| `SpacingScale.spaceMdLg` | 13 dp | Relaxed card inset, section with more visual weight |
+| `SpacingScale.spaceLg` | 15 dp | Standard component vertical padding — buttons, inputs |
 | `SpacingScale.spaceXl` | 21 dp | Card internal padding, section inset |
-| `SpacingScale.space2xl` | 25 dp | Page horizontal margin, wide section padding |
+| `SpacingScale.space2xl` | 25 dp | Page horizontal margin |
 | `SpacingScale.space3xl` | 29 dp | Button horizontal padding, large section leading space |
-| `SpacingScale.space4xl` | 35 dp | Hero section spacing, full-width card inset |
+| `SpacingScale.space4xl` | 35 dp | Between major page sections |
 | `SpacingScale.space5xl` | 39 dp | Large list item height, section separator |
 | `SpacingScale.space6xl` | 47 dp | Bottom sheet top padding, modal inset |
 | `SpacingScale.space7xl` | 65 dp | Navigation bar height, fixed bottom area |
@@ -31,119 +34,125 @@ All spacing comes from `SpacingScale`. Source of truth: Figma › Seasonal DLS �
 
 ---
 
-## Access pattern
+## Choosing between adjacent tokens
 
-```dart
-// CORRECT — import via barrel, reference SpacingScale
-import 'package:scapia_tokens/scapia_tokens.dart';
+**`spaceMd` (9) vs `spaceLg` (15)** — the most common decision:
+- `spaceMd`: gap *between* elements that belong to the same group (icon→label, title→subtitle)
+- `spaceLg`: padding *inside* a component boundary (button top/bottom, input internal)
 
-Padding(
-  padding: EdgeInsets.symmetric(
-    horizontal: SpacingScale.space2xl,   // 25 dp
-    vertical: SpacingScale.spaceLg,      // 15 dp
-  ),
-)
+**`spaceXl` (21) vs `space2xl` (25)** — card vs. page:
+- `spaceXl`: standard card internal padding
+- `space2xl`: page-level margin, or a featured card that needs more breathing room
 
-// WRONG — hardcoded number
-Padding(padding: EdgeInsets.all(8))
-
-// WRONG — Tier 1 direct
-Padding(padding: EdgeInsets.all(SpacingPrimitives.spacing9))
-```
+**`spaceSm` (7) vs `spaceXs` (5)** — small component internals:
+- `spaceXs`: icon-to-text when the component is very compact (tag, badge)
+- `spaceSm`: slightly more generous — chip, pill, small button variant
 
 ---
 
-## Composition recipes
+## Composition patterns
 
-### Inline elements (icon + label on one line)
-
-Use `space2xs` (2 dp) for a tight join or `spaceXs` (5 dp) for a comfortable gap.
-
+### Icon + label on one line
 ```dart
 Row(
   children: [
     Icon(icon, size: 16),
-    SizedBox(width: SpacingScale.spaceXs),  // 5 dp
-    Text(label),
+    SizedBox(width: SpacingScale.spaceXs),   // 5 dp — tight join
+    Text(label, style: ...),
   ],
 )
 ```
+Use `space2xs` (2) for a badge-style nudge. Use `spaceMd` (9) when the icon and label feel like separate elements.
 
-### Internal component padding
-
-Most interactive components (buttons, chips, tiles) use `spaceLg` (15 dp) vertical
-and `space3xl` (29 dp) horizontal — mirroring the Figma button padding variables.
-
+### Component internal padding (button, input, tile)
 ```dart
 Padding(
   padding: EdgeInsets.symmetric(
-    vertical: SpacingScale.spaceLg,    // 15 dp
-    horizontal: SpacingScale.space3xl, // 29 dp
+    vertical:   SpacingScale.spaceLg,    // 15 dp
+    horizontal: SpacingScale.space3xl,   // 29 dp
+  ),
+)
+```
+Compact components (tag, badge, chip):
+```dart
+Padding(
+  padding: EdgeInsets.symmetric(
+    vertical:   SpacingScale.spaceXs,    // 5 dp
+    horizontal: SpacingScale.spaceMd,    // 9 dp
   ),
 )
 ```
 
-For compact components (tags, badges): use `spaceXs` (5 dp) vertical / `spaceMd`
-(9 dp) horizontal.
-
-### Stack / vertical rhythm
-
-Siblings in a `Column` use `spaceMd` (9 dp) between them unless the content is
-tightly related (e.g. a label and its helper text), in which case `space2xs`
-(2 dp) keeps them visually grouped.
-
+### Vertical rhythm in a Column
 ```dart
 Column(
   crossAxisAlignment: CrossAxisAlignment.start,
   children: [
-    Text(label, style: ...),
-    SizedBox(height: SpacingScale.space2xs),  // label → helper: tight
-    Text(helperText, style: ...),
-    SizedBox(height: SpacingScale.spaceMd),   // group → next group: breathe
+    Text(label, ...),
+    SizedBox(height: SpacingScale.space2xs),   // 2 dp — label → helper: tightly grouped
+    Text(helperText, ...),
+    SizedBox(height: SpacingScale.spaceMd),    // 9 dp — group → next group: breathe
     NextSection(),
   ],
 )
 ```
+Tight grouping (2 dp) signals "these belong together". Standard gap (9 dp) signals "new group starts here".
 
-### Card / container inset
-
-Cards use `spaceXl` (21 dp) all-around padding as the default. Upgrade to
-`space2xl` (25 dp) when the card has more hierarchy (e.g. a featured card
-vs. a compact list row).
-
+### Card internal padding
 ```dart
-// Standard card inset
-Padding(padding: EdgeInsets.all(SpacingScale.spaceXl))   // 21 dp
-
-// Prominent card inset
-Padding(padding: EdgeInsets.all(SpacingScale.space2xl))  // 25 dp
+Padding(padding: EdgeInsets.all(SpacingScale.spaceXl))    // 21 dp — standard card
+Padding(padding: EdgeInsets.all(SpacingScale.space2xl))   // 25 dp — featured/prominent card
 ```
 
 ### Page margins
-
-Horizontal page margins use `space2xl` (25 dp). Apply via a parent `Padding`
-or `SliverPadding` — do not repeat it inside every child widget.
-
 ```dart
 Padding(
-  padding: EdgeInsets.symmetric(horizontal: SpacingScale.space2xl),
+  padding: EdgeInsets.symmetric(horizontal: SpacingScale.space2xl),  // 25 dp
   child: Column(...),
 )
 ```
+Apply once at the page level via a parent `Padding` or `SliverPadding`. Do not repeat it inside each child.
 
-### Between sections on a page
+### Between major sections
+```dart
+SizedBox(height: SpacingScale.space4xl)     // 35 dp — between page sections
+SizedBox(height: SpacingScale.spaceMdLg)    // 13 dp — section header → first list item
+```
 
-Use `space4xl` (35 dp) between major page sections. Use `spaceMdLg` (13 dp)
-between a section header and its first list item.
+### List items
+For list items with title + subtitle, the vertical rhythm inside is:
+```dart
+Column(
+  children: [
+    Text(title, style: TypographyScale.shdSmall.copyWith(...)),
+    SizedBox(height: SpacingScale.space2xs),    // 2 dp — title → subtitle
+    Text(subtitle, style: TypographyScale.pSmall.copyWith(...)),
+  ],
+)
+```
+
+---
+
+## Flutter layout decisions
+
+**`SizedBox` vs `Spacer()`**
+Use `SizedBox` with a token value when the gap is known and predictable. `Spacer()` is for flexible remaining space — do not use it when a specific gap is intended.
+
+**`Expanded` vs fixed `SizedBox`**
+- `Expanded`: child should fill available space — e.g. a text field in a row with a button
+- Fixed `SizedBox`: gap is a design decision, not dependent on available space
+
+**Asymmetric padding**
+Fine when justified. Use two separate tokens (`pl: spaceMdLg, pr: spaceLg`) — never arithmetic on one token (`spaceLg + 2`).
 
 ---
 
 ## Rules
 
-- Zero hardcoded `dp` values — every spacing comes from `SpacingScale`
-- Never use `SpacingPrimitives` directly in widget code — always go through the Scale
-- Do not add `Spacer()` when a fixed `SizedBox` with a token value is predictable
-- Asymmetric padding is fine when justified — use two different tokens, not arithmetic
+- Zero hardcoded `dp` values — every spacing value comes from `SpacingScale`
+- Never use `SpacingPrimitives` directly in widget code
+- No arithmetic on tokens (`spaceMd + 4`) — if the value doesn't exist, ask
+- No `Spacer()` when a fixed `SizedBox` with a token is predictable
 
 ---
 
@@ -151,11 +160,12 @@ between a section header and its first list item.
 
 ```dart
 // DO
-SizedBox(height: SpacingScale.spaceMd)    // clear intent, themeable
-SizedBox(height: SpacingScale.spaceXl)    // standard card inset
+SizedBox(height: SpacingScale.spaceMd)     // clear intent, token-tracked
+Padding(padding: EdgeInsets.all(SpacingScale.spaceXl))
 
 // DON'T
-SizedBox(height: 9)                            // magic number
-SizedBox(height: SpacingPrimitives.spacing9)   // Tier 1 in widget
-SizedBox(height: 8 + 1)                        // arithmetic on unknown values
+SizedBox(height: 9)                                 // magic number
+SizedBox(height: SpacingPrimitives.spacing9)        // Tier 1 in widget
+SizedBox(height: SpacingScale.spaceMd + 4)          // arithmetic on tokens
+Padding(padding: EdgeInsets.all(8))                 // hardcoded
 ```
