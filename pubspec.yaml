@@ -1,0 +1,12 @@
+name: scapia_workspace
+description: Scapia monorepo workspace root.
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+
+workspace:
+  - packages/tokens
+  - packages/ds
+  - packages/ds/widgetbook
+  - apps/app

@@ -1,0 +1,25 @@
+name: app
+description: Scapia product app.
+version: 1.0.0+1
+publish_to: none
+
+resolution: workspace
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  scapia_ds:
+    path: ../../packages/ds
+  scapia_tokens:
+    path: ../../packages/tokens
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

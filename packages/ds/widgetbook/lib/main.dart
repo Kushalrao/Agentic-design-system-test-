@@ -1,0 +1,46 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:scapia_ds/scapia_ds.dart';
+import 'package:widgetbook/widgetbook.dart';
+
+import 'components/button_story.dart';
+import 'components/stays_srp_story.dart';
+
+void main() => runApp(const WidgetbookShell());
+
+class WidgetbookShell extends StatelessWidget {
+  const WidgetbookShell({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Widgetbook(
+      directories: [
+        WidgetbookFolder(
+          name: 'Components',
+          children: [buttonComponent],
+        ),
+        WidgetbookFolder(
+          name: 'Stays SRP',
+          children: [staysSrpComponent],
+        ),
+      ],
+      addons: [
+        ThemeAddon(
+          themes: [
+            WidgetbookTheme(name: 'Light', data: ScapiaTheme.light()),
+          ],
+          themeBuilder: (context, theme, child) =>
+              Theme(data: theme, child: child),
+        ),
+        TextScaleAddon(initialScale: 1.0),
+      ],
+      appBuilder: (context, child) => MaterialApp(
+        theme: ScapiaTheme.light().copyWith(
+          textTheme: GoogleFonts.lexendDecaTextTheme(ScapiaTheme.light().textTheme),
+        ),
+        debugShowCheckedModeBanner: false,
+        home: child,
+      ),
+    );
+  }
+}

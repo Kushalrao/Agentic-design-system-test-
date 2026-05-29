@@ -1,1 +1,12 @@
 .firecrawl/
+.DS_Store
+**/.DS_Store
+
+# MCP config — contains Figma access token, never commit
+.mcp.json
+
+# Claude Code local settings — machine-specific, not team config
+.claude/settings.local.json
+
+# Token pipeline
+tools/tokens/node_modules/

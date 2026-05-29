@@ -1,0 +1,35 @@
+name: scapia
+
+packages:
+  - packages/**
+  - apps/**
+
+scripts:
+  analyze:
+    run: dart analyze .
+    description: Analyze the whole workspace.
+
+  test:
+    run: melos exec -- flutter test
+    description: Run flutter test in all packages.
+
+  format:
+    run: dart format packages/ apps/
+    description: Format all Dart files.
+
+  format:check:
+    run: dart format --set-exit-if-changed packages/ apps/
+    description: Check formatting across the workspace.
+
+  tokens:
+    run: node tools/tokens/generate.js
+    description: >
+      Pull Figma variables → generate Dart token files in packages/tokens/lib/src/.
+      Tier 2 files hold Dart references to Tier 1 constants, mirroring the Figma alias chain.
+      Requires FIGMA_ACCESS_TOKEN env var or a local .mcp.json.
+
+  widgetbook:
+    run: flutter run -d chrome
+    description: Launch Widgetbook component catalog in Chrome.
+    packageFilters:
+      scope: scapia_ds_widgetbook

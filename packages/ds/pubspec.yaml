@@ -1,0 +1,21 @@
+name: scapia_ds
+description: Scapia design system — themed Flutter widgets built on scapia_tokens.
+version: 0.0.1
+publish_to: none
+
+resolution: workspace
+
+environment:
+  sdk: ^3.11.0
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  scapia_tokens:
+    path: ../tokens
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
