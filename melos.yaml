@@ -33,3 +33,15 @@ scripts:
     description: Launch Widgetbook component catalog in Chrome.
     packageFilters:
       scope: scapia_ds_widgetbook
+
+  code-connect:publish:
+    run: cd tools/code-connect && npm install --silent && cd ../.. && FIGMA_ACCESS_TOKEN=$FIGMA_ACCESS_TOKEN ./tools/code-connect/node_modules/.bin/figma connect publish --config figma.config.json
+    description: >
+      Publish Figma Code Connect snippets to Figma Dev Mode.
+      Templates live in packages/ds/figma/**/*.figma.ts.
+      Requires FIGMA_ACCESS_TOKEN env var.
+      Run on every merge to main to keep Dev Mode in sync.
+
+  code-connect:check:
+    run: cd tools/code-connect && npm install --silent && cd ../.. && ./tools/code-connect/node_modules/.bin/figma connect check --config figma.config.json
+    description: Validate Code Connect templates without publishing.

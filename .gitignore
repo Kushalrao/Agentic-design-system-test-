@@ -8,5 +8,6 @@
 # Claude Code local settings — machine-specific, not team config
 .claude/settings.local.json
 
-# Token pipeline
+# Node tooling
 tools/tokens/node_modules/
+tools/code-connect/node_modules/

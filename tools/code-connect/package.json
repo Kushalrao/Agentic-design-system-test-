@@ -1,0 +1,13 @@
+{
+  "name": "ds-code-connect",
+  "private": true,
+  "description": "Figma Code Connect — publishes Dev Mode snippets from *.figma.ts templates",
+  "scripts": {
+    "publish": "figma connect publish --config ../../figma.config.json",
+    "unpublish": "figma connect unpublish --config ../../figma.config.json",
+    "check": "figma connect check --config ../../figma.config.json"
+  },
+  "devDependencies": {
+    "@figma/code-connect": "^1.0.0"
+  }
+}

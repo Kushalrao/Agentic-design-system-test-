@@ -1,0 +1,12 @@
+{
+  "codeConnect": {
+    "parser": "custom",
+    "parserCommand": "node tools/code-connect/parser.js",
+    "include": [
+      "packages/ds/figma/**/*.figma.js"
+    ],
+    "exclude": [
+      "**/node_modules/**"
+    ]
+  }
+}
