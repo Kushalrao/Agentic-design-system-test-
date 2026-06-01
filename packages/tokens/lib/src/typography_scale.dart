@@ -39,6 +39,7 @@ abstract final class TypographyScale {
 
   /// 13 / Regular / lh 21  — metadata, timestamps, fine print.
   static const TextStyle pSmall = TextStyle(
+    fontFamily: Foundation.fontFamilyLexendDeca,
     fontSize:   Foundation.fontSize13,
     fontWeight: FontWeight.w400,
     height:     Foundation.fontLineheight21 / Foundation.fontSize13,
@@ -48,6 +49,7 @@ abstract final class TypographyScale {
 
   /// 15 / Regular / lh 23  — supporting body text, list subtitles, helper copy.
   static const TextStyle pMedium = TextStyle(
+    fontFamily: Foundation.fontFamilyLexendDeca,
     fontSize:   Foundation.fontSize15,
     fontWeight: FontWeight.w400,
     height:     Foundation.fontLineheight23 / Foundation.fontSize15,
@@ -57,6 +59,7 @@ abstract final class TypographyScale {
 
   /// 17 / Regular / lh 25  — primary body copy, form values.
   static const TextStyle pLarge = TextStyle(
+    fontFamily: Foundation.fontFamilyLexendDeca,
     fontSize:   Foundation.fontSize17,
     fontWeight: FontWeight.w400,
     height:     Foundation.fontLineheight25 / Foundation.fontSize17,
@@ -66,6 +69,7 @@ abstract final class TypographyScale {
 
   /// 19 / Regular / lh 29  — slightly elevated body, introductory paragraphs.
   static const TextStyle pExtra = TextStyle(
+    fontFamily: Foundation.fontFamilyLexendDeca,
     fontSize:   Foundation.fontSize19,
     fontWeight: FontWeight.w400,
     height:     Foundation.fontLineheight29 / Foundation.fontSize19,
@@ -75,6 +79,7 @@ abstract final class TypographyScale {
 
   /// 23 / Regular / lh 35  — large readable prose, pull quotes.
   static const TextStyle pMax = TextStyle(
+    fontFamily: Foundation.fontFamilyLexendDeca,
     fontSize:   Foundation.fontSize23,
     fontWeight: FontWeight.w400,
     height:     Foundation.fontLineheight35 / Foundation.fontSize23,
@@ -86,6 +91,7 @@ abstract final class TypographyScale {
 
   /// 15 / Medium / lh 23  — prominent UI label, list item title, chip text.
   static const TextStyle shdSmall = TextStyle(
+    fontFamily: Foundation.fontFamilyLexendDeca,
     fontSize:   Foundation.fontSize15,
     fontWeight: FontWeight.w500,
     height:     Foundation.fontLineheight23 / Foundation.fontSize15,
@@ -95,6 +101,7 @@ abstract final class TypographyScale {
 
   /// 17 / Medium / lh 23  — tab label, card sub-title, section label.
   static const TextStyle shdMedium = TextStyle(
+    fontFamily: Foundation.fontFamilyLexendDeca,
     fontSize:   Foundation.fontSize17,
     fontWeight: FontWeight.w500,
     height:     Foundation.fontLineheight23 / Foundation.fontSize17,
@@ -106,6 +113,7 @@ abstract final class TypographyScale {
 
   /// 17 / SemiBold / lh 23  — compact heading, inline action text.
   static const TextStyle hdSmall = TextStyle(
+    fontFamily: Foundation.fontFamilyLexendDeca,
     fontSize:   Foundation.fontSize17,
     fontWeight: FontWeight.w600,
     height:     Foundation.fontLineheight23 / Foundation.fontSize17,
@@ -115,6 +123,7 @@ abstract final class TypographyScale {
 
   /// 19 / SemiBold / lh 27  — button label, prominent CTA, list item heading.
   static const TextStyle hdMedium = TextStyle(
+    fontFamily: Foundation.fontFamilyLexendDeca,
     fontSize:   Foundation.fontSize19,
     fontWeight: FontWeight.w600,
     height:     Foundation.fontLineheight27 / Foundation.fontSize19,
@@ -124,6 +133,7 @@ abstract final class TypographyScale {
 
   /// 23 / Bold / lh 35  — sub-section title, collapsible header.
   static const TextStyle hdLarge = TextStyle(
+    fontFamily: Foundation.fontFamilyLexendDeca,
     fontSize:   Foundation.fontSize23,
     fontWeight: FontWeight.w700,
     height:     Foundation.fontLineheight35 / Foundation.fontSize23,
@@ -133,6 +143,7 @@ abstract final class TypographyScale {
 
   /// 27 / Bold / lh 39  — section heading, modal title.
   static const TextStyle hdExtra = TextStyle(
+    fontFamily: Foundation.fontFamilyLexendDeca,
     fontSize:   Foundation.fontSize27,
     fontWeight: FontWeight.w700,
     height:     Foundation.fontLineheight39 / Foundation.fontSize27,
@@ -142,6 +153,7 @@ abstract final class TypographyScale {
 
   /// 35 / Bold / lh 47  — page title, primary screen header.
   static const TextStyle hdMax = TextStyle(
+    fontFamily: Foundation.fontFamilyLexendDeca,
     fontSize:   Foundation.fontSize35,
     fontWeight: FontWeight.w700,
     height:     Foundation.fontLineheight47 / Foundation.fontSize35,
@@ -151,6 +163,7 @@ abstract final class TypographyScale {
 
   /// 41 / Bold / lh 55  — screen-level hero heading.
   static const TextStyle hdRare = TextStyle(
+    fontFamily: Foundation.fontFamilyLexendDeca,
     fontSize:   Foundation.fontSize41,
     fontWeight: FontWeight.w700,
     height:     Foundation.fontLineheight55 / Foundation.fontSize41,
@@ -162,6 +175,7 @@ abstract final class TypographyScale {
 
   /// 12 / Regular / lh 19  — legal copy, overlines, reference codes.
   static const TextStyle lbSmall = TextStyle(
+    fontFamily: Foundation.fontFamilyLexendDeca,
     fontSize:   Foundation.fontSize12,
     fontWeight: FontWeight.w400,
     height:     Foundation.fontLineheight19 / Foundation.fontSize12,
@@ -171,6 +185,7 @@ abstract final class TypographyScale {
 
   /// 13 / Regular / lh 21  — category label, transaction ID, short metadata.
   static const TextStyle lbRegular = TextStyle(
+    fontFamily: Foundation.fontFamilyLexendDeca,
     fontSize:   Foundation.fontSize13,
     fontWeight: FontWeight.w400,
     height:     Foundation.fontLineheight21 / Foundation.fontSize13,
