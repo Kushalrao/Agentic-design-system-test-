@@ -16,3 +16,4 @@ tools/ds-mcp/node_modules/
 # Flutter build artifacts
 build/
 .dart_tool/
+packages/ds/test/components/button/failures/
