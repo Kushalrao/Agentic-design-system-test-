@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T05:29:01.346Z",
+  "generatedAt": "2026-06-01T05:48:46.160Z",
   "colors": [
     {
       "name": "brandPrimary",
@@ -497,6 +497,60 @@
       "lineHeight": 21,
       "fontFamily": "Lexend Deca",
       "useWhen": "Category label, timestamps, short metadata"
+    },
+    {
+      "figmaName": "Pr-Max",
+      "dartStatic": "TypographyScale.prMax",
+      "size": 47,
+      "weight": 400,
+      "lineHeight": 63,
+      "fontFamily": "GT Ultra Median Trial",
+      "useWhen": "Hero statement, campaign headline"
+    },
+    {
+      "figmaName": "Pr-Extra",
+      "dartStatic": "TypographyScale.prExtra",
+      "size": 35,
+      "weight": 400,
+      "lineHeight": 47,
+      "fontFamily": "GT Ultra Median Trial",
+      "useWhen": "Prominent promo heading"
+    },
+    {
+      "figmaName": "Pr-Base",
+      "dartStatic": "TypographyScale.prBase",
+      "size": 29,
+      "weight": 400,
+      "lineHeight": 43,
+      "fontFamily": "GT Ultra Median Trial",
+      "useWhen": "Promo sub-heading"
+    },
+    {
+      "figmaName": "Dp-Max",
+      "dartStatic": "TypographyScale.dpMax",
+      "size": 47,
+      "weight": 700,
+      "lineHeight": 63,
+      "fontFamily": "GT Flaire Basic Trial",
+      "useWhen": "Full-screen takeover, brand splash"
+    },
+    {
+      "figmaName": "Dp-Extra",
+      "dartStatic": "TypographyScale.dpExtra",
+      "size": 35,
+      "weight": 700,
+      "lineHeight": 47,
+      "fontFamily": "GT Flaire Basic Trial",
+      "useWhen": "High-impact display heading"
+    },
+    {
+      "figmaName": "Dp-Base",
+      "dartStatic": "TypographyScale.dpBase",
+      "size": 29,
+      "weight": 500,
+      "lineHeight": 43,
+      "fontFamily": "GT Flaire Basic Trial",
+      "useWhen": "Display sub-heading"
     }
   ],
   "components": [
@@ -504,7 +558,7 @@
       "name": "DsButton",
       "file": "packages/ds/lib/src/components/button/ds_button.dart",
       "figmaNode": "",
-      "knowledgebaseDoc": ""
+      "knowledgebaseDoc": "knowledgebase/components/ds_button.md"
     },
     {
       "name": "StaysSrpCard",

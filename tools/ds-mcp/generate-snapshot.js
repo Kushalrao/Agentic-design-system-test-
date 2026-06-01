@@ -140,21 +140,38 @@ function parseOpacityTokens(content) {
 function parseTypographyScale(content, foundation) {
   const styles = {};
 
-  // Extract TextStyle static names
-  const styleRe = /static const TextStyle (\w+) = TextStyle\(/g;
+  // Strategy 1: parse TextStyle blocks directly (works for all styles including Pr-*/Dp-*)
+  // Match: static const TextStyle name = TextStyle( ... );
+  const blockRe = /static const TextStyle (\w+) = TextStyle\(([\s\S]*?)\);/g;
   let m;
-  while ((m = styleRe.exec(content)) !== null) {
-    styles[m[1]] = {};
+  while ((m = blockRe.exec(content)) !== null) {
+    const name  = m[1];
+    const block = m[2];
+    const entry = {};
+
+    // fontSize: Foundation.fontSizeXX
+    const sizeM = block.match(/fontSize:\s*Foundation\.(\w+)/);
+    if (sizeM && foundation[sizeM[1]] !== undefined) entry.size = foundation[sizeM[1]];
+
+    // fontWeight: FontWeight.wNNN
+    const weightM = block.match(/fontWeight:\s*FontWeight\.w(\d+)/);
+    if (weightM) entry.weight = parseInt(weightM[1], 10);
+
+    // height: Foundation.fontLineheightXX / Foundation.fontSizeYY
+    const lhM = block.match(/height:\s*Foundation\.(\w+)\s*\/\s*Foundation\.(\w+)/);
+    if (lhM && foundation[lhM[1]] !== undefined) entry.lineheight = foundation[lhM[1]];
+
+    styles[name] = entry;
   }
 
-  // Extract raw numeric token values to resolve size/weight/lh
+  // Strategy 2: fill any gaps via raw numeric tokens
   // static const double pSmallSize = Foundation.fontSize13;
   const numRe = /static const double (\w+)(Size|Weight|Lineheight)\s*=\s*Foundation\.(\w+)/gi;
   while ((m = numRe.exec(content)) !== null) {
     const styleName = m[1];
     const prop      = m[2].toLowerCase();
     const foundKey  = m[3];
-    if (styles[styleName] && foundation[foundKey] !== undefined) {
+    if (styles[styleName] && styles[styleName][prop] === undefined && foundation[foundKey] !== undefined) {
       styles[styleName][prop] = foundation[foundKey];
     }
   }
