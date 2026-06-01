@@ -90,6 +90,18 @@ These apply to every widget edit, not just new components:
 
 ## MCP servers
 
+- **ds** — Scapia DS knowledge server. **Always prefer this over reading token files directly.**
+  Use for token lookup, gap checking, typography mapping, component reuse checks.
+
+  | Tool | When to call |
+  |---|---|
+  | `check_token(hex)` | Any unrecognised hex value in Figma design — returns exact match or gap |
+  | `get_typography_style(figmaName)` | Map a Figma text style name to `TypographyScale.*` static |
+  | `get_spacing_token(valueDp)` | Map a Figma spacing value to `SpacingScale.*` |
+  | `get_radius_token(valueDp)` | Map a Figma radius value to `RadiusTokens.*` |
+  | `list_components()` | Phase 0.5 of any component build — reuse check |
+  | `get_component(name)` | Get file path, figma node, knowledgebase doc for a component |
+
 - **figma-console** — Figma Console MCP (Southleft). Full read/write to Figma Desktop via WebSocket.
   Desktop Bridge plugin must be running. Use for: `figma_get_text_styles`, `figma_get_variables`, `figma_execute`.
 - **figma** — Figma REST MCP. Use for: `get_design_context`, `get_context_for_code_connect`.

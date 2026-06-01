@@ -56,13 +56,11 @@ Read these files before doing anything else:
 
 ### Phase 0.5 — DS reuse check (do not skip)
 
-Before touching Figma, read the current DS exports:
-- `packages/ds/lib/scapia_ds.dart`
-- `packages/ds/lib/src/components/` (scan all existing component files)
+Call `list_components()` on the **ds MCP server**.
 
 Answer these questions explicitly:
 1. Does any existing DS widget already implement this component, or a close variant?
-2. Does the design use sub-components (buttons, chips, icons, inputs) that already exist as DS widgets and should be **consumed**, not rebuilt?
+2. Does the design use sub-components (buttons, chips, icons, inputs) that already exist as DS widgets and should be **consumed**, not rebuilt? Call `get_component(name)` for detail.
 3. Does any existing component share layout structure or token usage that should be extracted into a shared primitive?
 
 **If reuse is possible → propose it to the user and wait for confirmation before proceeding.**
@@ -71,18 +69,11 @@ Answer these questions explicitly:
 
 ### Phase 1 — Fetch text styles (ALWAYS first)
 
-**Before fetching the component node**, call `figma_get_text_styles` (figma-console MCP).
+**Before fetching the component node**, call `figma_get_text_styles` (figma-console MCP) to get styles from the Figma file.
 
-Build a lookup table from the result:
+For each style returned, resolve to a Dart static using the **ds MCP**: `get_typography_style(figmaName)`.
 
-| Figma style name | Size | Weight | Line height | Dart static |
-|---|---|---|---|---|
-| P-Medium | 15 | 400 | 23 | `TypographyScale.pMedium` |
-| Hd-Small | 17 | 600 | 23 | `TypographyScale.hdSmall` |
-| Lb-Regular | 13 | 400 | 21 | `TypographyScale.lbRegular` |
-| … | … | … | … | … |
-
-If new styles appear in Figma that don't yet have a Dart static, **stop and add them** to `TypographyScale` before continuing.
+If the ds MCP returns `found: false` for a style → it doesn't exist in `TypographyScale` yet. **Stop and add it** to `TypographyScale` before continuing, then run `melos run ds-mcp:generate` to refresh the snapshot.
 
 ---
 
@@ -140,12 +131,13 @@ For every `TEXT` node:
 
 #### Frame / container nodes
 For every `FRAME` or `GROUP`:
-- `paddingLeft`, `paddingRight`, `paddingTop`, `paddingBottom` → `SpacingScale.*`
-- `itemSpacing` → `SpacingScale.*`
-- `cornerRadius` → `RadiusTokens.*`
-- `fills[].boundVariables.color` → `ColorScale.*`
+- `paddingLeft/Right/Top/Bottom`, `itemSpacing` → call `get_spacing_token(valueDp)` on ds MCP
+- `cornerRadius` → call `get_radius_token(valueDp)` on ds MCP
+- `fills[].boundVariables.color` → call `check_token(hex)` on ds MCP
 - `opacity` → `OpacityTokens.*`
 - `effects` → record any `dropShadow`, `innerShadow`, `layerBlur` (handled in Phase 3.6)
+
+For any token lookup that returns `found: false` → **stop and ask the user**.
 
 #### Image nodes
 - Note dimensions (height usually fixed, width fills container)

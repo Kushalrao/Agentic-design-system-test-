@@ -5,5 +5,8 @@
   "scripts": {
     "generate": "node generate-snapshot.js",
     "start": "node server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0"
   }
 }
