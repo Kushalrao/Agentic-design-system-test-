@@ -50,6 +50,21 @@ scripts:
       Requires FIGMA_ACCESS_TOKEN env var.
       Run on every merge to main to keep Dev Mode in sync.
 
+  test:goldens:
+    run: flutter test packages/ds/test/
+    description: >
+      Run all DS golden tests. Fails if any component renders differently
+      from the committed golden PNGs.
+      To regenerate: flutter test packages/ds/test/ --update-goldens
+      (then visually compare new goldens against Figma screenshots)
+
+  lint:ds-rules:
+    run: dart tools/lint/check_ds_rules.dart
+    description: >
+      Scan widget files for Seasonal DLS token violations.
+      Rules: no_hardcoded_color, no_flutter_colors, no_tier1_in_widgets, no_inline_text_style.
+      Exit 1 on any violation — use in CI before merging.
+
   code-connect:check:
     run: cd tools/code-connect && npm install --silent && cd ../.. && ./tools/code-connect/node_modules/.bin/figma connect check --config figma.config.json
     description: Validate Code Connect templates without publishing.

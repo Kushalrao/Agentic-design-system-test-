@@ -73,7 +73,7 @@ class DsButton extends StatelessWidget {
           width: 2,
         );
       case DsButtonVariant.ghost:
-        bgColor = const Color(0x00000000);
+        bgColor = const Color(0x00000000); // ds-lint-ignore: no_hardcoded_color — no transparent token in ColorScale yet
         fgColor = isDisabled ? colors.contentTertiary : colors.brandPrimary;
         border  = null;
     }
@@ -86,7 +86,7 @@ class DsButton extends StatelessWidget {
       label:   label,
       enabled: !isDisabled,
       child: Material(
-        color: const Color(0x00000000),
+        color: const Color(0x00000000), // ds-lint-ignore: no_hardcoded_color — Material requires explicit transparent; no token exists
         child: InkWell(
           onTap:        isDisabled ? null : onPressed,
           borderRadius: BorderRadius.circular(RadiusTokens.full),

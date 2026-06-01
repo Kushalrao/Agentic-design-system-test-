@@ -302,7 +302,7 @@ class _RatingPill extends StatelessWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             // Gap: rgba(0,0,0,0.4) — no Tier 2 overlay token
-            color:        const Color(0x66000000),
+            color:        const Color(0x66000000), // ds-lint-ignore: no_hardcoded_color — overlay bg, no Tier 2 token yet
             borderRadius: BorderRadius.circular(RadiusTokens.r16),
           ),
           child: Padding(
@@ -360,7 +360,7 @@ class _RatingScoreBadge extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         // Gap: #FFF2EC = primaryScapia000 — Tier 1 only, no Tier 2 alias yet
-        color:        ColorPrimitives.primaryScapia000,
+        color:        ColorPrimitives.primaryScapia000, // ds-lint-ignore: no_tier1_in_widgets — star badge tint, no Tier 2 alias yet
         borderRadius: BorderRadius.circular(RadiusTokens.r24),
       ),
       child: Padding(

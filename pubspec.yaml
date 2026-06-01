@@ -8,5 +8,6 @@ environment:
 workspace:
   - packages/tokens
   - packages/ds
+  - packages/ds_lint
   - packages/ds/widgetbook
   - apps/app
