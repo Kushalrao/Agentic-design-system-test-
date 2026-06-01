@@ -22,11 +22,19 @@ scripts:
     description: Check formatting across the workspace.
 
   tokens:
-    run: node tools/tokens/generate.js
+    run: node tools/tokens/generate.js && node tools/ds-mcp/generate-snapshot.js
     description: >
-      Pull Figma variables → generate Dart token files in packages/tokens/lib/src/.
+      Pull Figma variables → generate Dart token files in packages/tokens/lib/src/,
+      then regenerate tools/ds-mcp/ds-snapshot.json.
       Tier 2 files hold Dart references to Tier 1 constants, mirroring the Figma alias chain.
       Requires FIGMA_ACCESS_TOKEN env var or a local .mcp.json.
+
+  ds-mcp:generate:
+    run: node tools/ds-mcp/generate-snapshot.js
+    description: >
+      Regenerate tools/ds-mcp/ds-snapshot.json from token Dart files + knowledgebase.
+      Run after: editing knowledgebase/foundations/*.md, adding a new component,
+      or resolving a token gap. Token pipeline runs this automatically.
 
   widgetbook:
     run: flutter run -d chrome

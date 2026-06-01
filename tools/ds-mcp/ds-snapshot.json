@@ -1,0 +1,516 @@
+{
+  "generatedAt": "2026-06-01T05:29:01.346Z",
+  "colors": [
+    {
+      "name": "brandPrimary",
+      "dart": "colors.brandPrimary",
+      "hex": "#CE3E00",
+      "tier1": "ColorPrimitives.primaryScapia800",
+      "intent": "Primary CTA, active indicator, brand moment, progress fill",
+      "doNotUseFor": ""
+    },
+    {
+      "name": "brandDark",
+      "dart": "colors.brandDark",
+      "hex": "#031223",
+      "tier1": "ColorPrimitives.secondaryBlue900",
+      "intent": "Alternate primary CTA on light backgrounds, high-contrast surface",
+      "doNotUseFor": ""
+    },
+    {
+      "name": "feedbackNegative",
+      "dart": "colors.feedbackNegative",
+      "hex": "#F5222D",
+      "tier1": "ColorPrimitives.warningRed400",
+      "intent": "Error state, destructive action, failed transaction, form validation failure",
+      "doNotUseFor": ""
+    },
+    {
+      "name": "feedbackWarning",
+      "dart": "colors.feedbackWarning",
+      "hex": "#FAAD14",
+      "tier1": "ColorPrimitives.alertYellow400",
+      "intent": "Caution, pending approval, expiry warning, review required",
+      "doNotUseFor": ""
+    },
+    {
+      "name": "feedbackPositive",
+      "dart": "colors.feedbackPositive",
+      "hex": "#52C41A",
+      "tier1": "ColorPrimitives.successGreen400",
+      "intent": "Success, confirmed, approved, completed action",
+      "doNotUseFor": ""
+    },
+    {
+      "name": "backgroundPrimary",
+      "dart": "colors.backgroundPrimary",
+      "hex": "#FFFFFF",
+      "tier1": "ColorPrimitives.neutralGrey000",
+      "intent": "Default page background, card surface, modal surface, text on dark fills",
+      "doNotUseFor": "Never as text color"
+    },
+    {
+      "name": "backgroundSecondary",
+      "dart": "colors.backgroundSecondary",
+      "hex": "#F1F6FB",
+      "tier1": "ColorPrimitives.neutralGrey100",
+      "intent": "Alternate row, section divider, recessed panel, skeleton loader",
+      "doNotUseFor": "First-level card on white page"
+    },
+    {
+      "name": "backgroundTertiary",
+      "dart": "colors.backgroundTertiary",
+      "hex": "#E1EAF4",
+      "tier1": "ColorPrimitives.neutralGrey200",
+      "intent": "Disabled fill, subtle wash, chip background, tag background",
+      "doNotUseFor": "Any interactive element in active state"
+    },
+    {
+      "name": "contentPrimary",
+      "dart": "colors.contentPrimary",
+      "hex": "#121212",
+      "tier1": "ColorPrimitives.neutralGrey900",
+      "intent": "Default body copy, headings, labels, icons — start here",
+      "doNotUseFor": "Placeholder text, disabled text"
+    },
+    {
+      "name": "contentSecondary",
+      "dart": "colors.contentSecondary",
+      "hex": "#4B545E",
+      "tier1": "ColorPrimitives.neutralGrey700",
+      "intent": "Supporting text — captions, subtitles, helper lines, secondary labels",
+      "doNotUseFor": "Primary body copy"
+    },
+    {
+      "name": "contentTertiary",
+      "dart": "colors.contentTertiary",
+      "hex": "#BBC9D9",
+      "tier1": "ColorPrimitives.neutralGrey500",
+      "intent": "Disabled text, placeholder, de-emphasised metadata",
+      "doNotUseFor": "Any interactive or readable text"
+    },
+    {
+      "name": "borderOpaque",
+      "dart": "colors.borderOpaque",
+      "hex": "#E1EAF4",
+      "tier1": "ColorPrimitives.neutralGrey200",
+      "intent": "Default card outline, input idle state border, list divider, separator",
+      "doNotUseFor": ""
+    },
+    {
+      "name": "borderSelection",
+      "dart": "colors.borderSelection",
+      "hex": "#121212",
+      "tier1": "ColorPrimitives.neutralGrey900",
+      "intent": "Selected state, focused input border, active toggle border",
+      "doNotUseFor": ""
+    }
+  ],
+  "colorGaps": [
+    {
+      "hex": "#262B30",
+      "description": "neutralGrey800 — high-emphasis text",
+      "workaround": "colors.contentPrimary (#121212)",
+      "whenToAdd": "When a third content depth is needed consistently"
+    },
+    {
+      "hex": "#8C9AAA",
+      "description": "neutralGrey600 — low-emphasis text",
+      "workaround": "colors.contentSecondary (#4B545E)",
+      "whenToAdd": "When mid-tone text appears in 3+ components"
+    },
+    {
+      "hex": "#389E0D",
+      "description": "successGreen500 — stronger positive",
+      "workaround": "colors.feedbackPositive (#52C41A)",
+      "whenToAdd": "When positive emphasis needs two levels"
+    },
+    {
+      "hex": "#D48806",
+      "description": "alertYellow500 — deeper warning",
+      "workaround": "colors.feedbackWarning (#FAAD14)",
+      "whenToAdd": "When warning has two emphasis levels"
+    },
+    {
+      "hex": "#FFF2EC",
+      "description": "primaryScapia000 — orange tint bg",
+      "workaround": "ColorPrimitives.primaryScapia000",
+      "whenToAdd": "When orange tinted backgrounds are a pattern"
+    },
+    {
+      "hex": "rgba(0,0,0,0.4)",
+      "description": "Image overlay",
+      "workaround": "const Color(0x66000000)",
+      "whenToAdd": "When overlay opacity becomes a token"
+    }
+  ],
+  "spacing": [
+    {
+      "name": "spaceNone",
+      "dart": "SpacingScale.spaceNone",
+      "valueDp": 0,
+      "useWhen": "Explicitly remove default padding — intentional zero"
+    },
+    {
+      "name": "space2xs",
+      "dart": "SpacingScale.space2xs",
+      "valueDp": 2,
+      "useWhen": "Icon-to-badge nudge, hairline gap, pixel-level alignment"
+    },
+    {
+      "name": "spaceXs",
+      "dart": "SpacingScale.spaceXs",
+      "valueDp": 5,
+      "useWhen": "Icon-to-label gap, tight chip internal padding"
+    },
+    {
+      "name": "spaceSm",
+      "dart": "SpacingScale.spaceSm",
+      "valueDp": 7,
+      "useWhen": "Internal padding for small components — tag, badge, chip"
+    },
+    {
+      "name": "spaceMd",
+      "dart": "SpacingScale.spaceMd",
+      "valueDp": 9,
+      "useWhen": "Standard gap between sibling elements"
+    },
+    {
+      "name": "spaceMdLg",
+      "dart": "SpacingScale.spaceMdLg",
+      "valueDp": 13,
+      "useWhen": "Relaxed card inset, section with more visual weight"
+    },
+    {
+      "name": "spaceLg",
+      "dart": "SpacingScale.spaceLg",
+      "valueDp": 15,
+      "useWhen": "Standard component vertical padding — buttons, inputs"
+    },
+    {
+      "name": "spaceXl",
+      "dart": "SpacingScale.spaceXl",
+      "valueDp": 21,
+      "useWhen": "Card internal padding, section inset"
+    },
+    {
+      "name": "space2xl",
+      "dart": "SpacingScale.space2xl",
+      "valueDp": 25,
+      "useWhen": "Page horizontal margin"
+    },
+    {
+      "name": "space3xl",
+      "dart": "SpacingScale.space3xl",
+      "valueDp": 29,
+      "useWhen": "Button horizontal padding, large section leading space"
+    },
+    {
+      "name": "space4xl",
+      "dart": "SpacingScale.space4xl",
+      "valueDp": 35,
+      "useWhen": "Between major page sections"
+    },
+    {
+      "name": "space5xl",
+      "dart": "SpacingScale.space5xl",
+      "valueDp": 39,
+      "useWhen": "Large list item height, section separator"
+    },
+    {
+      "name": "space6xl",
+      "dart": "SpacingScale.space6xl",
+      "valueDp": 47,
+      "useWhen": "Bottom sheet top padding, modal inset"
+    },
+    {
+      "name": "space7xl",
+      "dart": "SpacingScale.space7xl",
+      "valueDp": 65,
+      "useWhen": "Navigation bar height, fixed bottom area"
+    },
+    {
+      "name": "space8xl",
+      "dart": "SpacingScale.space8xl",
+      "valueDp": 75,
+      "useWhen": "Tab bar + content offset"
+    },
+    {
+      "name": "space9xl",
+      "dart": "SpacingScale.space9xl",
+      "valueDp": 95,
+      "useWhen": "Scroll offset for sticky headers"
+    },
+    {
+      "name": "space10xl",
+      "dart": "SpacingScale.space10xl",
+      "valueDp": 115,
+      "useWhen": "Full-bleed hero image height, large illustration area"
+    }
+  ],
+  "radius": [
+    {
+      "name": "r4",
+      "dart": "RadiusTokens.r4",
+      "valueDp": 4
+    },
+    {
+      "name": "r8",
+      "dart": "RadiusTokens.r8",
+      "valueDp": 8
+    },
+    {
+      "name": "r12",
+      "dart": "RadiusTokens.r12",
+      "valueDp": 12
+    },
+    {
+      "name": "r16",
+      "dart": "RadiusTokens.r16",
+      "valueDp": 16
+    },
+    {
+      "name": "r20",
+      "dart": "RadiusTokens.r20",
+      "valueDp": 20
+    },
+    {
+      "name": "r24",
+      "dart": "RadiusTokens.r24",
+      "valueDp": 24
+    },
+    {
+      "name": "r32",
+      "dart": "RadiusTokens.r32",
+      "valueDp": 32
+    },
+    {
+      "name": "r36",
+      "dart": "RadiusTokens.r36",
+      "valueDp": 36
+    },
+    {
+      "name": "r40",
+      "dart": "RadiusTokens.r40",
+      "valueDp": 40
+    },
+    {
+      "name": "r44",
+      "dart": "RadiusTokens.r44",
+      "valueDp": 44
+    },
+    {
+      "name": "full",
+      "dart": "RadiusTokens.full",
+      "valueDp": 999
+    }
+  ],
+  "opacity": [
+    {
+      "name": "opacity0",
+      "dart": "OpacityTokens.opacity0",
+      "value": 0
+    },
+    {
+      "name": "opacity10",
+      "dart": "OpacityTokens.opacity10",
+      "value": 0.1
+    },
+    {
+      "name": "opacity20",
+      "dart": "OpacityTokens.opacity20",
+      "value": 0.2
+    },
+    {
+      "name": "opacity30",
+      "dart": "OpacityTokens.opacity30",
+      "value": 0.3
+    },
+    {
+      "name": "opacity40",
+      "dart": "OpacityTokens.opacity40",
+      "value": 0.4
+    },
+    {
+      "name": "opacity50",
+      "dart": "OpacityTokens.opacity50",
+      "value": 0.5
+    },
+    {
+      "name": "opacity60",
+      "dart": "OpacityTokens.opacity60",
+      "value": 0.6
+    },
+    {
+      "name": "opacity70",
+      "dart": "OpacityTokens.opacity70",
+      "value": 0.7
+    },
+    {
+      "name": "opacity80",
+      "dart": "OpacityTokens.opacity80",
+      "value": 0.8
+    },
+    {
+      "name": "opacity90",
+      "dart": "OpacityTokens.opacity90",
+      "value": 0.9
+    },
+    {
+      "name": "opacity100",
+      "dart": "OpacityTokens.opacity100",
+      "value": 1
+    }
+  ],
+  "typography": [
+    {
+      "figmaName": "P-Small",
+      "dartStatic": "TypographyScale.pSmall",
+      "size": 13,
+      "weight": 400,
+      "lineHeight": 21,
+      "fontFamily": "Lexend Deca",
+      "useWhen": "Metadata, timestamps, transaction IDs, fine print"
+    },
+    {
+      "figmaName": "P-Medium",
+      "dartStatic": "TypographyScale.pMedium",
+      "size": 15,
+      "weight": 400,
+      "lineHeight": 23,
+      "fontFamily": "Lexend Deca",
+      "useWhen": "Supporting body — subtitles, helper text, card descriptions"
+    },
+    {
+      "figmaName": "P-Large",
+      "dartStatic": "TypographyScale.pLarge",
+      "size": 17,
+      "weight": 400,
+      "lineHeight": 25,
+      "fontFamily": "Lexend Deca",
+      "useWhen": "Primary body copy, form field values"
+    },
+    {
+      "figmaName": "P-Extra",
+      "dartStatic": "TypographyScale.pExtra",
+      "size": 19,
+      "weight": 400,
+      "lineHeight": 29,
+      "fontFamily": "Lexend Deca",
+      "useWhen": "Elevated body — introductory paragraphs, featured descriptions"
+    },
+    {
+      "figmaName": "P-Max",
+      "dartStatic": "TypographyScale.pMax",
+      "size": 23,
+      "weight": 400,
+      "lineHeight": 35,
+      "fontFamily": "Lexend Deca",
+      "useWhen": "Large prose, pull quotes"
+    },
+    {
+      "figmaName": "Shd-Small",
+      "dartStatic": "TypographyScale.shdSmall",
+      "size": 15,
+      "weight": 500,
+      "lineHeight": 23,
+      "fontFamily": "Lexend Deca",
+      "useWhen": "List item title, chip text, tab label"
+    },
+    {
+      "figmaName": "Shd-Medium",
+      "dartStatic": "TypographyScale.shdMedium",
+      "size": 17,
+      "weight": 500,
+      "lineHeight": 23,
+      "fontFamily": "Lexend Deca",
+      "useWhen": "Card sub-title, section label, prominent list title"
+    },
+    {
+      "figmaName": "Hd-Small",
+      "dartStatic": "TypographyScale.hdSmall",
+      "size": 17,
+      "weight": 600,
+      "lineHeight": 23,
+      "fontFamily": "Lexend Deca",
+      "useWhen": "Compact heading, inline action label"
+    },
+    {
+      "figmaName": "Hd-Medium",
+      "dartStatic": "TypographyScale.hdMedium",
+      "size": 19,
+      "weight": 600,
+      "lineHeight": 27,
+      "fontFamily": "Lexend Deca",
+      "useWhen": "**Button labels**, prominent CTAs, list item heading"
+    },
+    {
+      "figmaName": "Hd-Large",
+      "dartStatic": "TypographyScale.hdLarge",
+      "size": 23,
+      "weight": 700,
+      "lineHeight": 35,
+      "fontFamily": "Lexend Deca",
+      "useWhen": "Sub-section title, collapsible header"
+    },
+    {
+      "figmaName": "Hd-Extra",
+      "dartStatic": "TypographyScale.hdExtra",
+      "size": 27,
+      "weight": 700,
+      "lineHeight": 39,
+      "fontFamily": "Lexend Deca",
+      "useWhen": "Section heading, modal title"
+    },
+    {
+      "figmaName": "Hd-Max",
+      "dartStatic": "TypographyScale.hdMax",
+      "size": 35,
+      "weight": 700,
+      "lineHeight": 47,
+      "fontFamily": "Lexend Deca",
+      "useWhen": "Page title, primary screen header"
+    },
+    {
+      "figmaName": "Hd-Rare",
+      "dartStatic": "TypographyScale.hdRare",
+      "size": 41,
+      "weight": 700,
+      "lineHeight": 55,
+      "fontFamily": "Lexend Deca",
+      "useWhen": "Screen-level hero heading"
+    },
+    {
+      "figmaName": "Lb-Small",
+      "dartStatic": "TypographyScale.lbSmall",
+      "size": 12,
+      "weight": 400,
+      "lineHeight": 19,
+      "fontFamily": "Lexend Deca",
+      "useWhen": "Legal copy, overline, reference IDs"
+    },
+    {
+      "figmaName": "Lb-Regular",
+      "dartStatic": "TypographyScale.lbRegular",
+      "size": 13,
+      "weight": 400,
+      "lineHeight": 21,
+      "fontFamily": "Lexend Deca",
+      "useWhen": "Category label, timestamps, short metadata"
+    }
+  ],
+  "components": [
+    {
+      "name": "DsButton",
+      "file": "packages/ds/lib/src/components/button/ds_button.dart",
+      "figmaNode": "",
+      "knowledgebaseDoc": ""
+    },
+    {
+      "name": "StaysSrpCard",
+      "file": "packages/ds/lib/src/components/stays/stays_srp_card.dart",
+      "figmaNode": "https://www.figma.com/design/dZsOJpJ6G3Fs7WgrYSqt3P/Alt-Stays?node-id=2608-5110",
+      "knowledgebaseDoc": "knowledgebase/components/stays_srp_card.md"
+    }
+  ]
+}

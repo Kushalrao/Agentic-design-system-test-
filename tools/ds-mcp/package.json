@@ -1,0 +1,9 @@
+{
+  "name": "ds-mcp",
+  "private": true,
+  "description": "Scapia DS — MCP server and snapshot generator",
+  "scripts": {
+    "generate": "node generate-snapshot.js",
+    "start": "node server.js"
+  }
+}

@@ -11,6 +11,7 @@
 # Node tooling
 tools/tokens/node_modules/
 tools/code-connect/node_modules/
+tools/ds-mcp/node_modules/
 
 # Flutter build artifacts
 build/
