@@ -190,6 +190,20 @@ Before writing a single line of Dart, produce this table in full:
 | Price text | `Text/price` | 17 / SemiBold / 23 | Hd-Small | `TypographyScale.hdSmall` | No |
 | `/night` color | `Text/night` | `#8C9AAA` | *(no Tier 2 alias)* | **Gap — ask user** | **Yes** |
 
+#### Token lookup protocol
+
+For every color in the design:
+1. Call `check_token(hex)` — get the token + `doNotUseFor`
+2. If `doNotUseFor` is set → call `get_color_guidance(tokenName)` and check the depth model and pairing rules against the current context. If `doNotUseFor` applies → stop and ask the user.
+
+For every spacing value in the design:
+1. Call `get_spacing_token(dp)` — get the token value
+2. If deciding BETWEEN two adjacent tokens (e.g. spaceMd vs spaceLg) → call `get_spacing_recipe(pattern)` to understand which token the pattern calls for
+
+For every typography style:
+1. Call `get_typography_style(figmaName)` — get the Dart static
+2. If choosing between visually similar styles (same size, different weight) → call `get_typography_guidance(figmaName)` to see the decision table
+
 #### Gap protocol
 When a gap is found:
 1. **Stop and ask the user** what token or approach to use — do not silently fall back to the closest.
