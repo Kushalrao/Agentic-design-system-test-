@@ -12,6 +12,22 @@ void main() => runApp(const WidgetbookShell());
 class WidgetbookShell extends StatelessWidget {
   const WidgetbookShell({super.key});
 
+  // google_fonts registers Lexend Deca as 'LexendDeca' (camelCase, no space).
+  // ScapiaTheme.light() sets fontFamily: 'Lexend Deca' (spaced) — Flutter can't
+  // match them and falls back to the system font.
+  // ThemeData.copyWith() has no fontFamily parameter in Flutter 3.x, so we
+  // rebuild the theme directly using the exact name google_fonts registered.
+  static ThemeData get _theme => ThemeData(
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor:  ColorScale.light.brandPrimary,
+      brightness: Brightness.light,
+    ),
+    fontFamily: GoogleFonts.lexendDeca().fontFamily,
+    extensions: const [ColorScale.light],
+    textTheme:  GoogleFonts.lexendDecaTextTheme(),
+  );
+
   @override
   Widget build(BuildContext context) {
     return Widgetbook(
@@ -28,7 +44,7 @@ class WidgetbookShell extends StatelessWidget {
       addons: [
         ThemeAddon(
           themes: [
-            WidgetbookTheme(name: 'Light', data: ScapiaTheme.light()),
+            WidgetbookTheme(name: 'Light', data: _theme),
           ],
           themeBuilder: (context, theme, child) =>
               Theme(data: theme, child: child),
@@ -36,9 +52,7 @@ class WidgetbookShell extends StatelessWidget {
         TextScaleAddon(initialScale: 1.0),
       ],
       appBuilder: (context, child) => MaterialApp(
-        theme: ScapiaTheme.light().copyWith(
-          textTheme: GoogleFonts.lexendDecaTextTheme(ScapiaTheme.light().textTheme),
-        ),
+        theme: _theme,
         debugShowCheckedModeBanner: false,
         home: child,
       ),
