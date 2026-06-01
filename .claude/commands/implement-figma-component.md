@@ -225,12 +225,24 @@ Component location:
 
 ### Phase 6 — Validate
 
+Run in this order — each gate must pass before the next:
+
 ```bash
+# 1. Syntax + type errors first — if this fails, nothing else can run
 dart analyze packages/
+
+# 2. DS token tier violations — catches what dart analyze can't
+dart tools/lint/check_ds_rules.dart
+
+# 3. Token alias chain contract
 flutter test packages/tokens/
+
+# 4. Regression check — did this component break any existing golden?
+#    (New component has no goldens yet — this only checks existing ones)
+melos run test:goldens
 ```
 
-Zero errors, zero warnings required before proceeding.
+All four must exit cleanly before proceeding. If `melos run test:goldens` fails, you changed something that broke an existing component's visual output — fix that before moving on.
 
 ---
 
@@ -299,9 +311,11 @@ Do not auto-accept goldens without visual review.
 
 **Quality**
 - [ ] `dart analyze packages/` → No issues found
+- [ ] `dart tools/lint/check_ds_rules.dart` → ✅ DS lint passed
 - [ ] `flutter test packages/tokens/` → All tests passed
-- [ ] Golden tests written for every variant × state
-- [ ] Goldens visually compared against Figma screenshot — not auto-accepted
+- [ ] `melos run test:goldens` → All existing goldens pass (regression check)
+- [ ] Golden tests written for the new component (every variant × state)
+- [ ] New goldens visually compared against Figma screenshot — not auto-accepted
 
 **Catalog & connect**
 - [ ] Widgetbook story added with Interactive + edge-case use-cases
