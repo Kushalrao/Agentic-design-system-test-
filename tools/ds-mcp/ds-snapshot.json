@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T07:30:24.801Z",
+  "generatedAt": "2026-06-01T10:52:20.194Z",
   "colors": [
     {
       "name": "brandPrimary",
@@ -559,12 +559,6 @@
       "file": "packages/ds/lib/src/components/button/ds_button.dart",
       "figmaNode": "",
       "knowledgebaseDoc": "knowledgebase/components/ds_button.md"
-    },
-    {
-      "name": "StaysPropertyCard",
-      "file": "packages/ds/lib/src/components/stays/stays_property_card.dart",
-      "figmaNode": "",
-      "knowledgebaseDoc": ""
     },
     {
       "name": "StaysSrpCard",

@@ -3,7 +3,6 @@ import 'package:scapia_ds/scapia_ds.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 import 'components/button_story.dart';
-import 'components/stays_property_card_story.dart';
 import 'components/stays_srp_story.dart';
 
 void main() => runApp(const WidgetbookShell());
@@ -21,7 +20,7 @@ class WidgetbookShell extends StatelessWidget {
         ),
         WidgetbookFolder(
           name: 'Stays',
-          children: [staysSrpComponent, staysPropertyCardComponent],
+          children: [staysSrpComponent],
         ),
       ],
       addons: [
