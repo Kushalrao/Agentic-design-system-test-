@@ -24,6 +24,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/icons/
+    - assets/icons/scapia-score/
+    - assets/icons/staystars/
   fonts:
     - family: Lexend Deca
       fonts:

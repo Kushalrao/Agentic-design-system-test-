@@ -37,6 +37,16 @@ abstract final class TypographyScale {
 
   // ── P — Paragraph (Lexend Deca, Regular/w400) ─────────────────────────────
 
+  /// 10 / Regular / lh 15  — micro labels, rating counts, score overlays.
+  static const TextStyle pExtraSmall = TextStyle(
+    fontFamily: Foundation.fontFamilyLexendDeca,
+    fontSize:   Foundation.fontSize10,
+    fontWeight: FontWeight.w400,
+    height:     Foundation.fontLineheight15 / Foundation.fontSize10,
+    leadingDistribution: TextLeadingDistribution.even,
+    decoration:            TextDecoration.none,
+  );
+
   /// 13 / Regular / lh 21  — metadata, timestamps, fine print.
   static const TextStyle pSmall = TextStyle(
     fontFamily: Foundation.fontFamilyLexendDeca,
@@ -263,6 +273,10 @@ abstract final class TypographyScale {
   // ════════════════════════════════════════════════════════════════════════════
 
   // ── Paragraph ────────────────────────────────────────────────────────────
+  static const double pExtraSmallSize       = Foundation.fontSize10;
+  static const double pExtraSmallWeight     = Foundation.fontWeightRegular;  // 400
+  static const double pExtraSmallLineheight = Foundation.fontLineheight15;
+
   static const double pSmallSize       = Foundation.fontSize13;
   static const double pSmallWeight     = Foundation.fontWeightRegular;   // 400
   static const double pSmallLineheight = Foundation.fontLineheight21;

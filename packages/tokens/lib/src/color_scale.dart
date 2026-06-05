@@ -98,8 +98,8 @@ class ColorScale extends ThemeExtension<ColorScale> {
     backgroundTertiary:  ColorPrimitives.neutralGrey200,
     // Surface/Content/Primary → Neutral/Grey/900
     contentPrimary:      ColorPrimitives.neutralGrey900,
-    // Surface/Content/Secondary → Neutral/Grey/700
-    contentSecondary:    ColorPrimitives.neutralGrey700,
+    // Surface/Content/Secondary → Neutral/Grey/600
+    contentSecondary:    ColorPrimitives.neutralGrey600,
     // Surface/Content/Tertiary → Neutral/Grey/500
     contentTertiary:     ColorPrimitives.neutralGrey500,
     // Surface/Border/Opaque → Neutral/Grey/200

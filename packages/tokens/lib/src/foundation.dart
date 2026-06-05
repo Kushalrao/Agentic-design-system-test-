@@ -10,6 +10,7 @@ abstract final class Foundation {
   static const String fontFamilyGtFlaire      = 'GT Flaire Basic Trial';
 
   // ── Font sizes ───────────────────────────────────────────────────────────
+  static const double fontSize10 = 10;
   static const double fontSize12 = 12;
   static const double fontSize13 = 13;
   static const double fontSize15 = 15;
@@ -35,6 +36,7 @@ abstract final class Foundation {
   static const double fontWeightBlack     = 900;
 
   // ── Line heights ─────────────────────────────────────────────────────────
+  static const double fontLineheight15 = 15;
   static const double fontLineheight19 = 19;
   static const double fontLineheight21 = 21;
   static const double fontLineheight23 = 23;

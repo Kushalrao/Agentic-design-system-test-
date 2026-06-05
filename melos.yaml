@@ -68,3 +68,11 @@ scripts:
   code-connect:check:
     run: cd tools/code-connect && npm install --silent && cd ../.. && ./tools/code-connect/node_modules/.bin/figma connect check --config figma.config.json
     description: Validate Code Connect templates without publishing.
+
+  icons:export:
+    run: FIGMA_ACCESS_TOKEN=$FIGMA_ACCESS_TOKEN python3 tools/export_icons.py
+    description: >
+      Re-export all Seasonal DLS icons from Figma Iconography page to
+      packages/ds/assets/icons/ and regenerate ScapiaIcons constants class.
+      Skips already-downloaded files — safe to re-run incrementally.
+      Requires FIGMA_ACCESS_TOKEN env var (file_content:read scope).

@@ -9,10 +9,12 @@
 //   melos run lint:ds-rules
 //
 // Rules:
-//   no_hardcoded_color     — Color(0xFF...) literals banned; use ColorScale
-//   no_flutter_colors      — Colors.* from Flutter banned; use ColorScale
-//   no_tier1_in_widgets    — ColorPrimitives/Foundation/SpacingPrimitives banned
-//   no_inline_text_style   — TextStyle(fontSize: n) inline assembly banned
+//   no_hardcoded_color       — Color(0xFF...) literals banned; use ColorScale
+//   no_flutter_colors        — Colors.* from Flutter banned; use ColorScale
+//   no_tier1_in_widgets      — ColorPrimitives/Foundation/SpacingPrimitives banned
+//   no_inline_text_style     — TextStyle(fontSize: n) inline assembly banned
+//   no_bare_border           — Border.all(color:) without explicit width: banned
+//   no_raw_spacing_literal   — SizedBox/EdgeInsets with raw number matching a SpacingScale value
 //
 // Ignore a specific line with:
 //   // ds-lint-ignore: no_hardcoded_color
@@ -28,6 +30,7 @@ class Rule {
     required this.message,
     required this.fix,
     this.exemptFiles = const {},
+    this.gapExempt   = false,
   });
 
   final String          name;
@@ -35,6 +38,9 @@ class Rule {
   final String          message;
   final String          fix;
   final Set<String>     exemptFiles;
+  /// When true, lines containing '// Gap:' are exempt from this rule.
+  /// Used for spacing rules where documented sub-token raw literals are allowed.
+  final bool            gapExempt;
 }
 
 final _rules = [
@@ -83,6 +89,42 @@ final _rules = [
     exemptFiles: {
       'typography_scale.dart',
     },
+  ),
+  Rule(
+    // Catches Border.all( where the first named argument is color: without width: preceding it.
+    // Per DS rules, strokeWeight must always be read from the Figma node and written explicitly.
+    // Flutter's default width of 1.0 is not a token match — it is a silent assumption.
+    // Fix: Border.all(width: N, color: ...) where N comes from the Figma strokeWeight field.
+    name:    'no_bare_border',
+    pattern: RegExp(r'Border\.all\s*\(\s*color\s*:'),
+    message: 'Border.all() with no explicit width: — Flutter defaults to 1.0 dp, which may not match the Figma strokeWeight',
+    fix:     'Read strokeWeight from the Figma node inventory and write:\n'
+             '  Border.all(width: N, color: colors.fieldName)\n'
+             'If the Figma strokeWeight is 1.0 and that is intentional, write it explicitly and add a // Gap: comment.',
+  ),
+  Rule(
+    // Catches SizedBox or EdgeInsets using a raw number that exactly matches a SpacingScale
+    // token value. These must use the token — using the raw number bypasses the tier contract
+    // and makes future token renames invisible to this widget.
+    //
+    // SpacingScale values (excluding 0 and 2 which are commonly used as raw layout adjustments):
+    //   5→spaceXs  7→spaceSm  9→spaceMd  13→spaceMdLg  15→spaceLg  21→spaceXl
+    //   25→space2xl  29→space3xl  35→space4xl  39→space5xl  47→space6xl  65→space7xl
+    //   75→space8xl  95→space9xl  115→space10xl
+    //
+    // Exempt: lines with a '// Gap:' comment (documented sub-token values are allowed as raw literals).
+    name:    'no_raw_spacing_literal',
+    pattern: RegExp(
+      r'(?:SizedBox\s*\([^)]*(?:width|height)|EdgeInsets\.(?:all|symmetric|only|fromLTRB))\s*[(:,]\s*'
+      r'(?:5|7|9|13|15|21|25|29|35|39|47|65|75|95|115)(?:\.0)?\s*[,\):]',
+    ),
+    message: 'Raw spacing literal matches a SpacingScale token value',
+    fix:     'Use the SpacingScale token:\n'
+             '  5→spaceXs  7→spaceSm  9→spaceMd  13→spaceMdLg  15→spaceLg  21→spaceXl\n'
+             '  25→space2xl  29→space3xl  35→space4xl  39→space5xl  47→space6xl  65→space7xl\n'
+             '  75→space8xl  95→space9xl  115→space10xl\n'
+             'If this is a documented gap (no token exists), add a // Gap: comment to suppress.',
+    gapExempt: true,
   ),
 ];
 
@@ -150,6 +192,7 @@ List<String> _scanFile(File file) {
     for (final rule in _rules) {
       if (rule.exemptFiles.contains(fileName)) continue;
       if (ignoredRules.contains(rule.name) || ignoredRules.contains('all')) continue;
+      if (rule.gapExempt && line.contains('// Gap:')) continue;
       if (!rule.pattern.hasMatch(line)) continue;
 
       results.add(

@@ -70,7 +70,7 @@ Never jump levels (e.g. backgroundTertiary directly on a backgroundPrimary page)
 | Token | Hex | Use when | Do NOT use for |
 |---|---|---|---|
 | `contentPrimary` | #121212 | Default body copy, headings, labels, icons — start here | Placeholder text, disabled text |
-| `contentSecondary` | #4B545E | Supporting text — captions, subtitles, helper lines, secondary labels | Primary body copy |
+| `contentSecondary` | #8C9AAA | Supporting text — captions, subtitles, helper lines, secondary labels | Primary body copy |
 | `contentTertiary` | #BBC9D9 | Disabled text, placeholder, de-emphasised metadata | Any interactive or readable text |
 
 **Choosing content depth:**

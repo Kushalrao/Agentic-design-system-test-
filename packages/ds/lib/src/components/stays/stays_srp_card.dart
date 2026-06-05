@@ -249,7 +249,8 @@ class _ShortlistButton extends StatelessWidget {
           child: DecoratedBox(
             decoration: BoxDecoration(
               color:        colors.backgroundPrimary,
-              border:       Border.all(color: colors.backgroundPrimary),
+              // Gap: Border/1 variable = 1 dp; no BorderTokens class yet
+              border:       Border.all(width: 1.0, color: colors.backgroundPrimary), // ds-lint-ignore: no_bare_border
               borderRadius: BorderRadius.circular(RadiusTokens.r32),
             ),
             child: Padding(

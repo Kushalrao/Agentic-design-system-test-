@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T10:52:20.194Z",
+  "generatedAt": "2026-06-05T10:51:37.934Z",
   "colors": [
     {
       "name": "brandPrimary",
@@ -364,6 +364,15 @@
   ],
   "typography": [
     {
+      "figmaName": "P-ExtraSmall",
+      "dartStatic": "TypographyScale.pExtraSmall",
+      "size": 10,
+      "weight": 400,
+      "lineHeight": 15,
+      "fontFamily": "Lexend Deca",
+      "useWhen": ""
+    },
+    {
       "figmaName": "P-Small",
       "dartStatic": "TypographyScale.pSmall",
       "size": 13,
@@ -559,6 +568,12 @@
       "file": "packages/ds/lib/src/components/button/ds_button.dart",
       "figmaNode": "",
       "knowledgebaseDoc": "knowledgebase/components/ds_button.md"
+    },
+    {
+      "name": "StaysPropertyCard",
+      "file": "packages/ds/lib/src/components/stays/stays_property_card.dart",
+      "figmaNode": "https://www.figma.com/design/dZsOJpJ6G3Fs7WgrYSqt3P/Alt-Stays?node-id=2675-5319",
+      "knowledgebaseDoc": "knowledgebase/components/stays_property_card.md"
     },
     {
       "name": "StaysSrpCard",

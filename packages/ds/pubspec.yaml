@@ -14,10 +14,64 @@ dependencies:
     sdk: flutter
   scapia_tokens:
     path: ../tokens
+  flutter_svg: ^2.0.10
 
 flutter:
   assets:
     - assets/fonts/
+    - assets/icons/
+    - assets/icons/arrows-diagrams/
+    - assets/icons/baby-children-toys/
+    - assets/icons/basic-shapes/
+    - assets/icons/beauty/
+    - assets/icons/building-construction/
+    - assets/icons/business-products/
+    - assets/icons/cleaning-housekeeping/
+    - assets/icons/clothes-accessories/
+    - assets/icons/computers-devices-electronics/
+    - assets/icons/content-edit/
+    - assets/icons/copy-right/
+    - assets/icons/crypto-currency/
+    - assets/icons/cursor-select-hand/
+    - assets/icons/delivery/
+    - assets/icons/design-tools/
+    - assets/icons/emails/
+    - assets/icons/fast-food-drink/
+    - assets/icons/files/
+    - assets/icons/folders/
+    - assets/icons/food/
+    - assets/icons/fruits-vegetables/
+    - assets/icons/furniture/
+    - assets/icons/geometric-abstract/
+    - assets/icons/holidays/
+    - assets/icons/hotels/
+    - assets/icons/interface-essential/
+    - assets/icons/internet-network-cloud/
+    - assets/icons/kitchen-cooking/
+    - assets/icons/landmarks-places/
+    - assets/icons/messages-chat/
+    - assets/icons/mobile-devices/
+    - assets/icons/mobile-telephone/
+    - assets/icons/money/
+    - assets/icons/music-audio/
+    - assets/icons/navigation-maps/
+    - assets/icons/outdoor-park/
+    - assets/icons/payments-finance/
+    - assets/icons/phones/
+    - assets/icons/protection-security/
+    - assets/icons/restaurant-cafe/
+    - assets/icons/scapia-score/
+    - assets/icons/staystars/
+    - assets/icons/shopping-ecommerce/
+    - assets/icons/sport/
+    - assets/icons/support-help-question/
+    - assets/icons/technology-space/
+    - assets/icons/transportation/
+    - assets/icons/travel/
+    - assets/icons/type-paragraph-character/
+    - assets/icons/user/
+    - assets/icons/video-movies/
+    - assets/icons/weather-climate/
   fonts:
     - family: Lexend Deca
       fonts:
