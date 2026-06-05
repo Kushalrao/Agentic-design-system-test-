@@ -5,8 +5,6 @@ import 'package:widgetbook/widgetbook.dart';
 import 'components/button_story.dart';
 import 'components/ds_scapia_score_story.dart';
 import 'components/ds_stay_stars_story.dart';
-import 'components/stays_property_card_story.dart';
-import 'components/stays_srp_story.dart';
 
 void main() => runApp(const WidgetbookShell());
 
@@ -24,10 +22,6 @@ class WidgetbookShell extends StatelessWidget {
         WidgetbookFolder(
           name: 'Rating',
           children: [dsScapiaScoreComponent, dsStayStarsComponent],
-        ),
-        WidgetbookFolder(
-          name: 'Stays',
-          children: [staysSrpComponent, staysPropertyCardComponent],
         ),
       ],
       addons: [
