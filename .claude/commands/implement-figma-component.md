@@ -34,6 +34,7 @@ Without a strict procedure, these failure modes recur:
 24. **Root width assumed fixed** — `_cardWidth = N` written from `absoluteBoundingBox.width` even when `layoutSizingHorizontal: FILL` means the component should fill its container.
 25. **Treating a variant system as a snapshot** — the URL frame shows one state; the component has a matrix of variants and states designed in Figma, none of which are fetched or implemented. Every variant-specific token — background color per variant, border per state, element visibility per boolean — is missed.
 26. **Nested INSTANCE properties ignored** — icon instances and sub-component instances inside a frame have their own `properties` field with VARIANT options naming exactly which icon or sub-component is used. These are read as visual inspection guesses instead.
+27. **Nested sub-component inlined instead of composed** — a nested INSTANCE (`Pill`, `Stars container`, `Button`) is a reference to its own Figma component, but its markup is rebuilt inline in the parent as a private widget. It should either consume an existing DS widget or be built standalone first, then composed — never duplicated inline.
 
 This skill enforces the correct order: **classify → check what exists → fetch everything → exhaust the MCP response → map the full variant system → write → test → connect**.
 
@@ -162,28 +163,40 @@ Mapping rules:
 - `TEXT` → `String` param; Figma's current value is the default.
 - `INSTANCE_SWAP` → which DS component is slotted in. Add to gap batch: ask which Dart widget maps to each option.
 
-#### Step 2.5B — Nested INSTANCE traversal → internal implementation choices
+#### Step 2.5B — Nested INSTANCE traversal → reuse or build-first
 
-Walk every entry in `descendants`. For each entry where `type = "INSTANCE"` and `properties` is **non-empty**, record it:
+Walk **every** entry in `descendants` where `type = "INSTANCE"` — not just those with properties. Each INSTANCE is a reference to its own Figma component (`mainComponentName`). It must map to a DS asset or DS widget — never inlined by visual guessing.
 
-| Descendant key | Instance name | Property | Type | Options |
-|---|---|---|---|---|
-| e.g. `INSTANCE[Icon]` | Icon | Name | VARIANT | `arrow-right, map-pin` |
-| e.g. `INSTANCE[Icon]` | Icon | Size | VARIANT | `16` |
+Categorize each nested INSTANCE into one of two buckets:
 
-These are **not constructor params** — they are implementation choices inside the widget body:
-- **Icon VARIANT options** → which icon to render at this node. All 13,751 Seasonal DLS icons are pre-exported to `packages/ds/assets/icons/` and accessible via `ScapiaIcons`. Resolution process:
-  1. Read the option name from Figma (e.g. `arrow-right`, `kitchen`, `map-pin`)
-  2. Derive the expected constant using the transformation rules in `knowledgebase/foundations/icons.md`: slugify the option name → camelCase → append size (default `25px`). Example: `arrow-right` → `interfaceEssentialArrowRight25px`
-  3. Grep `packages/ds/lib/src/icons/scapia_icons.dart` for constants containing the keyword. Example: `grep -i "arrowright" scapia_icons.dart`
-  4. If one clear match → use `SvgPicture.asset(ScapiaIcons.{constant})`. Done.
-  5. If multiple matches → pick the one whose Figma comment line most closely matches the design intent. Record the chosen constant in the component's knowledgebase doc.
-  6. If zero matches → the icon name doesn't exist in the Seasonal DLS library. Add to gap batch: *"Icon `{option-name}` not found in ScapiaIcons — designer needs to add it to Figma Iconography page and re-run `melos run icons:export`"*
-  7. **Never** use `Icons.*` from Flutter as a substitute. Never guess visually.
-- **Sub-component VARIANT options** → which variant of the nested DS widget to instantiate.
-- **Sub-component BOOLEAN** → conditional rendering of that child.
+**Bucket 1 — Icon instances** (`mainComponentName` matches an Iconography entry, e.g. `Interface, Essential/Arrow, Right/ 25px`, `Staystars/ 11px`):
+1. Read the option/name from Figma
+2. Derive the expected constant using the rules in `knowledgebase/foundations/icons.md` (slugify → camelCase → size suffix)
+3. Grep `packages/ds/lib/src/icons/scapia_icons.dart` for it
+4. One clear match → `SvgPicture.asset(ScapiaIcons.{constant})`. Multiple → pick by closest Figma comment. Zero → gap batch: export the icon, then use it
+5. **Never** use `Icons.*`. Never guess visually.
 
-> **Rule:** Never choose an icon by visual inspection. The VARIANT option name on an INSTANCE descendant is the source of truth. Resolve via `icons.md` first — gap batch only if the icon is not yet registered.
+**Bucket 2 — Sub-component instances** (any other `mainComponentName` — e.g. `Pill`, `Stars container`, `Button`, `Chip`):
+
+> **Rule — every nested sub-component instance maps to a DS widget. If it does not exist, build it as a standalone DS component first, then compose. Never inline its markup into the parent.**
+
+Resolution process for each Bucket 2 instance:
+1. Take the `mainComponentName`. Derive the expected Dart class name (e.g. `Pill` → `DsPill`, `Stars container` → `DsStarsContainer`).
+2. Call `list_components()` and `get_component(name)` on the ds MCP — does a DS widget already implement it?
+   - **Exists** → consume it. Instantiate the existing widget; pass the nested instance's properties as its constructor args. Do not re-derive its internals.
+   - **Does not exist** → **stop the parent build**. Surface this to the user:
+     ```
+     SUB-COMPONENT FIRST: "{mainComponentName}" (Figma node {id}) is a nested
+     component instance with no DS equivalent. Per DS rules it must be built as a
+     standalone component before {parent}. Build it now?
+       → Recommended: run /implement-figma-component on its Figma node first,
+         then resume {parent} and consume it.
+     ```
+3. Record every Bucket 2 instance and its resolution (consumed existing / built standalone / user-overrode-to-inline) in the component's knowledgebase doc.
+
+> This mirrors Figma's own `compositionDependencies.ai_instruction`, which the `get_component_for_development` MCP returns: *"Each sub-component that does NOT exist must be built FIRST as standalone before building the parent."* The `compositionDependencies` field lists exactly which sub-components a node depends on — read it.
+
+**Why this matters:** inlining a nested component's markup (e.g. rebuilding a `Pill` badge as a private `_Badge` widget inside the parent) duplicates design logic that should live in one place. When the Pill changes in Figma, every parent that inlined it drifts. Building it once as `DsPill` and composing keeps a single source of truth.
 
 #### Step 2.5C — Classify the node
 
@@ -732,10 +745,13 @@ Do not auto-accept goldens without visual review.
 
 **Component structure (Phase 2.5)**
 - [ ] `get_context_for_code_connect` called — root `properties` read
-- [ ] All INSTANCE descendants with non-empty `properties` walked and recorded (Step 2.5B)
+- [ ] Every INSTANCE descendant walked (not just those with properties) and categorized: icon vs sub-component
+- [ ] Icon instances resolved to a `ScapiaIcons` constant or added to gap batch — no visual guessing
+- [ ] Sub-component instances checked against `list_components()` — existing → consumed; missing → built standalone first (or user override recorded)
+- [ ] No nested sub-component inlined as private markup when it should be a composed DS widget
+- [ ] `compositionDependencies` field read — all listed sub-components accounted for
 - [ ] Node classified: STATIC FRAME / FRAME WITH NESTED INSTANCES / COMPONENT WITH PROPERTIES (Step 2.5C)
 - [ ] If STATIC FRAME: Figma limitations documented in knowledgebase — no dynamic wiring possible
-- [ ] Nested INSTANCE variant options either resolved to a Dart asset or added to gap batch — no visual guessing
 
 **Variant matrix (Phase 2.6 — only when COMPONENT WITH PROPERTIES)**
 - [ ] COMPONENT_SET parent fetched — full property × options set retrieved
