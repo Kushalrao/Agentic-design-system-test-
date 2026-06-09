@@ -111,7 +111,37 @@ Call **both** of these on every new component — they answer different question
 
 For each style returned, resolve to a Dart static using the **ds MCP**: `get_typography_style(figmaName)`.
 
-If the ds MCP returns `found: false` for a style → it doesn't exist in `TypographyScale` yet. **Stop and add it** to `TypographyScale` before continuing, then run `melos run ds-mcp:generate` to refresh the snapshot.
+If the ds MCP returns `found: false` for a style → it doesn't exist in `TypographyScale` yet. **Stop and follow this procedure before continuing:**
+
+#### Typography token addition procedure
+
+1. **Read `packages/tokens/lib/src/foundation.dart`** — check whether the required `fontSize` and `fontLineheight` primitives already exist.
+   - If missing, add them: `static const double fontSizeN = N;` and `static const double fontLineheightN = N;`
+
+2. **Add the `TextStyle` static to `packages/tokens/lib/src/typography_scale.dart`:**
+   ```dart
+   /// N / Weight / lh N — [when to use this style].
+   static const TextStyle pExtraSmall = TextStyle(
+     fontFamily: Foundation.fontFamilyLexendDeca,
+     fontSize:   Foundation.fontSizeN,
+     fontWeight: FontWeight.wNNN,
+     height:     Foundation.fontLineheightN / Foundation.fontSizeN,
+     leadingDistribution: TextLeadingDistribution.even,
+     decoration:            TextDecoration.none,
+   );
+   ```
+   Also add the raw numeric constants in the "Raw numeric tokens" section:
+   ```dart
+   static const double pExtraSmallSize       = Foundation.fontSizeN;
+   static const double pExtraSmallWeight     = Foundation.fontWeightRegular;
+   static const double pExtraSmallLineheight = Foundation.fontLineheightN;
+   ```
+
+3. **Run `flutter test packages/tokens/`** — the tier contract test must pass. If it fails, a required primitive reference is missing.
+
+4. **Run `melos run ds-mcp:generate`** — regenerates `tools/ds-mcp/ds-snapshot.json` so `get_typography_style` returns the new static going forward.
+
+5. **Verify** — call `get_typography_style(figmaName)` again. It must now return `found: true` before Phase 2 can start.
 
 ---
 
@@ -140,6 +170,24 @@ Build a variable → Dart token lookup:
 | `Containers/Radius/20` | `RadiusTokens.r20` |
 | `Containers/Opacity/40` | `OpacityTokens.opacity40` |
 | … | … |
+
+**Color Semantics cross-check — run immediately after building the table:**
+
+For every `Color Semantics` variable in the response, verify that our `color_scale.dart` declaration matches what Figma actually resolves to. This catches token implementation errors (wrong primitive reference) before they silently ship in a component.
+
+For each Color Semantics variable:
+1. Read the resolved hex from the MCP response (e.g. `Surface/Content/Secondary → #8C9AAA`)
+2. Call `check_token(hex)` on the ds MCP
+3. Compare the returned Dart token's underlying primitive hex against the Figma resolved hex
+4. If they **match** → ✓ proceed
+5. If they **diverge** → this is a bug in `color_scale.dart`, not a component gap. **Stop and fix it:**
+   - Update the primitive reference in `color_scale.dart` (e.g. `neutralGrey700` → `neutralGrey600`)
+   - Update `knowledgebase/foundations/color.md` with the correct hex
+   - Run `flutter test packages/tokens/` to verify the alias chain
+   - Run `flutter test packages/ds/test/ --update-goldens` to regenerate all affected goldens
+   - Visually confirm each affected golden renders correctly
+
+> This check exists because wrong primitive references in `color_scale.dart` affect every component using that token and are invisible to `dart analyze` and the DS lint scanner. Example: `contentSecondary` was mapped to `neutralGrey700` (#4B545E) when Figma's `Surface/Content/Secondary` resolves to `neutralGrey600` (#8C9AAA) — discovered only when a component's label color looked wrong in widgetbook.
 
 ---
 
@@ -697,12 +745,36 @@ Create or update `knowledgebase/components/{component}.md` with:
 
    Any designed state with no golden → add the test before running `--update-goldens`.
 
-3. Run:
+3. **Write behavior tests for every callback parameter** before generating goldens.
+
+   For every `VoidCallback?`, `onPressed`, `onTap`, `onChanged`, or similar interactive param in the constructor, write at minimum two behavior tests:
+   - **Fires when non-null:** taps the widget, verifies the callback was called exactly once
+   - **Suppressed when null:** passes `null`, taps the widget, verifies no callback and no error
+
+   ```dart
+   testWidgets('onTap fires when provided', (tester) async {
+     var fired = false;
+     await tester.pumpWidget(_wrap(
+       DsX(onTap: () => fired = true),
+     ));
+     await tester.tap(find.byType(DsX));
+     expect(fired, isTrue);
+   });
+
+   testWidgets('onTap suppressed when null', (tester) async {
+     await tester.pumpWidget(_wrap(const DsX(onTap: null)));
+     await tester.tap(find.byType(DsX)); // must not throw
+   });
+   ```
+
+   These tests do not need goldens — they are behavior, not visual.
+
+4. Run:
    ```bash
    flutter test packages/ds/test/components/{category}/ --update-goldens
    ```
 
-4. Open each generated golden PNG and **visually compare against the Figma node screenshot** from Phase 3.
+5. Open each generated golden PNG and **visually compare against the Figma node screenshot** from Phase 3.
    Focus specifically on: spacing between sections, container heights, chip padding, text size/alignment.
    These are the properties golden tests at system-font resolution are most likely to pass incorrectly.
 
@@ -734,12 +806,37 @@ Do not auto-accept goldens without visual review.
 
 ---
 
+### When a core token changes — propagation checklist
+
+Any change to `color_scale.dart`, `typography_scale.dart`, `spacing_scale.dart`, `radius_tokens.dart`, or `opacity_tokens.dart` affects every component using that token. Run this checklist completely before marking the token change done.
+
+**Immediately after the token file edit:**
+- [ ] `dart analyze packages/` → No issues
+- [ ] `flutter test packages/tokens/` → Alias chain + tier contract pass
+
+**Propagation:**
+- [ ] Update `knowledgebase/foundations/color.md` (or typography/spacing) — the hex value and any pairing rules that reference it
+- [ ] Run `melos run ds-mcp:generate` — refresh the DS MCP snapshot so `check_token`, `get_typography_style` etc. return correct values
+- [ ] Run `flutter test packages/ds/test/ --update-goldens` — regenerate all component goldens that render the changed token
+- [ ] Open each updated golden and visually verify it now renders the intended value (correct color, size, spacing)
+- [ ] If the token change affects color: re-run the Phase 2 cross-check on all existing components to confirm no other `color_scale.dart` mismatches remain
+
+**Documentation:**
+- [ ] Note the change in the relevant component knowledgebase docs under "Token gaps" if a previously documented gap was resolved
+- [ ] Commit with a message that names the changed primitive (not just "fix color") so the change is traceable in git history
+
+> Token changes are silent regressions waiting to happen. A wrong `contentSecondary` value (#4B545E vs #8C9AAA) shipped across every component for the entire build without being caught by any automated gate — because no gate compared Figma variable resolved values against `color_scale.dart` declarations. The cross-check in Phase 2 is the prevention; this checklist is the response when a fix is needed.
+
+---
+
 ## Checklist (tick every box before marking done)
 
 **Fetch phases**
 - [ ] DS reuse check completed — existing widgets checked, reuse confirmed or ruled out
 - [ ] `figma_get_text_styles` called — confirmed non-zero styles returned (hard block if zero)
+- [ ] All text styles resolved to `TypographyScale.*` statics — any `found: false` resolved via the token addition procedure before Phase 2
 - [ ] `figma_get_variables` called — confirmed non-zero variables returned (hard block if zero)
+- [ ] Color Semantics cross-check complete — every variable's resolved hex matches its `color_scale.dart` primitive; any mismatch fixed before Phase 3
 - [ ] Figma component properties extracted and mapped to Dart constructor params
 - [ ] `get_design_context` called — full response processed (not skimmed)
 
@@ -824,6 +921,7 @@ Do not auto-accept goldens without visual review.
 - [ ] `melos run test:goldens` → All existing goldens pass (regression check)
 - [ ] Golden tests written for the new component (every variant × state)
 - [ ] State completeness cross-checked: every "Designed: Yes" row from Phase 2.75 has a corresponding golden test
+- [ ] Behavior tests written for every callback param (`onTap`, `onPressed`, `onChanged`) — fires + suppressed cases
 - [ ] New goldens visually compared against Figma screenshot — not auto-accepted
 - [ ] If component uses `ScapiaIcons.*`: verified icon renders visibly in Widgetbook (golden tests cannot catch SVG load failures)
 
