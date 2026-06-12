@@ -197,6 +197,36 @@ Call `mcp__figma__get_context_for_code_connect` with the node URL. One call, thr
 
 #### Step 2.5A — Root properties → constructor API
 
+**Derive the Dart class name first — before reading properties.**
+
+The response's root `name` field is the Figma component name. Apply this rule immediately:
+
+**Naming rule:**
+
+| Condition | Rule | Example |
+|---|---|---|
+| Name describes a UI element clearly | Slugify → PascalCase → `Ds` prefix | `"Stay stars"` → `DsStayStars` |
+| Name has trailing spaces or punctuation | Strip, then apply above | `"Scapia score "` → `DsScapiaScore` |
+| Name is a layout description, not a component | Override with a semantic name, document reason | `"Hotel review"` → `DsPropertyCard` (layout description overridden) |
+| Name is generic (`"Frame 1"`, `"Group"`, `"Component 47"`) | Stop — ask the user what this component should be called before proceeding |
+
+**Transformation steps (default path):**
+1. Strip leading/trailing whitespace and punctuation from Figma name
+2. Split on spaces and `/` → title-case each word → join → PascalCase
+3. Prefix with `Ds`
+4. This is the Dart class name, the file name (`ds_stay_stars.dart` = snake_case of class), and the knowledgebase doc name
+
+**No category prefix in the class name.** The folder (`rating/`, `button/`) is the category. `DsStayStars`, not `RatingStayStars`.
+
+Record the resolved class name here before reading properties — it stays fixed for the rest of the implementation.
+
+```
+Figma name:     "Stay stars"
+Dart class:     DsStayStars
+File:           packages/ds/lib/src/components/rating/ds_stay_stars.dart
+Knowledgebase:  knowledgebase/components/ds_stay_stars.md
+```
+
 Record every entry in the root `properties` field:
 
 | Figma property | Type | Options | Maps to Dart |
@@ -841,6 +871,8 @@ Any change to `color_scale.dart`, `typography_scale.dart`, `spacing_scale.dart`,
 - [ ] `get_design_context` called — full response processed (not skimmed)
 
 **Component structure (Phase 2.5)**
+- [ ] Dart class name derived from Figma `name` field using naming rule — recorded before reading properties
+- [ ] If Figma name is generic (`Frame N`, `Group`, `Component N`) — user was asked for the class name before proceeding
 - [ ] `get_context_for_code_connect` called — root `properties` read
 - [ ] Every INSTANCE descendant walked (not just those with properties) and categorized: icon vs sub-component
 - [ ] Icon instances resolved to a `ScapiaIcons` constant or added to gap batch — no visual guessing
