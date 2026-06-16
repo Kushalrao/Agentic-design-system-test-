@@ -3,6 +3,7 @@ import 'package:scapia_ds/scapia_ds.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 import 'components/button_story.dart';
+import 'components/ds_ap_benefits_story.dart';
 import 'components/ds_scapia_score_story.dart';
 import 'components/ds_stay_stars_story.dart';
 
@@ -15,6 +16,10 @@ class WidgetbookShell extends StatelessWidget {
   Widget build(BuildContext context) {
     return Widgetbook(
       directories: [
+        WidgetbookFolder(
+          name: 'Benefits',
+          children: [dsApBenefitsComponent],
+        ),
         WidgetbookFolder(
           name: 'Components',
           children: [buttonComponent],

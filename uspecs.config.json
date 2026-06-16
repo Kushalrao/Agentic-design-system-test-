@@ -1,0 +1,5 @@
+{
+  "mcpProvider": "figma-console",
+  "environment": "claude-code",
+  "cliVersion": "0.3.0"
+}
