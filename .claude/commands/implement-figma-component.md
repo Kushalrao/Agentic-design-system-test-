@@ -147,7 +147,11 @@ If the ds MCP returns `found: false` for a style → it doesn't exist in `Typogr
 
 ### Phase 2 — Fetch variables
 
-Call `figma_get_variables` (figma-console MCP) or `figma_browse_tokens`.
+**Two-step protocol — do not collapse into one call.**
+
+#### Step 2a — Full collection discovery (always first)
+
+Call `figma_get_variables(format=summary)` — no collection filter, no verbosity restriction.
 
 > ⛔ **Hard block — tool failure check:**
 > If the response returns `total_variables: 0` or an error, **stop immediately**. Do not proceed.
@@ -160,7 +164,37 @@ Call `figma_get_variables` (figma-console MCP) or `figma_browse_tokens`.
 > ```
 > Do not proceed with unresolved `VariableID:...` strings in the design context — they cannot be traced to dp values without this step.
 
-Build a variable → Dart token lookup:
+From the summary response, record **every collection** and its modes:
+
+| Collection name | Collection ID | Modes |
+|---|---|---|
+| Color Semantics | 334:10794 | Light / Dark |
+| Containers | 225:3952 | Mode 1 |
+| Base • AP Cards | 557:291 | Shop / Meal / Spa / Lounge |
+| Base • Pills surface colors | 477:37 | White / Light blue / Light orange / Accent blue / Accent orange |
+| … | … | … |
+
+> **Any collection with more than one mode is a potential variant dimension.** Component-specific collections (e.g. `Base • AP Cards`, `Base • Pills surface colors`) drive multi-mode theming that is invisible to Phase 2.5's VARIANT property scan. Record them now — they become additional enum axes in Phase 2.6.
+
+#### Step 2b — Fetch known collections
+
+Fetch the following collections immediately (these are always relevant):
+- `Color Semantics` — semantic color tokens
+- `Containers` — spacing, radius, opacity tokens
+
+For every **additional collection discovered in Step 2a that has more than one mode** — fetch it now and add all its variable → value mappings to the lookup table.
+
+#### Step 2c — Reactive collection fetching (Phase 3 dependency)
+
+After Phase 3 returns node data, every `VariableID` in `boundVariables` must be cross-referenced against the Step 2a collection list. If a `VariableID` doesn't belong to any fetched collection:
+1. Find which collection owns it from the Step 2a summary
+2. Fetch that collection immediately
+3. Add its variable → value mappings to the lookup table
+4. If the collection has multiple modes → **add it as a new variant dimension** (see Phase 2.6)
+
+> This reactive step is mandatory. Skipping it is what caused the `Base • AP Cards` miss: `VariableID:557:292` appeared in fill data, had no lookup entry, and was silently treated as an unknown hex gap instead of a 4-mode themed variable.
+
+Build the final variable → Dart token lookup:
 
 | Figma variable path | Dart token |
 |---|---|
@@ -238,10 +272,22 @@ Record every entry in the root `properties` field:
 Mapping rules:
 - `VARIANT` → Dart `enum`, one case per option. Never a raw `String`.
 - `BOOLEAN` → `VoidCallback?` when it drives an interaction; `bool` when it drives visible state (isDisabled, isLoading).
-- `TEXT` → `String` param; Figma's current value is the default.
+- `TEXT` → `String` param. If this TEXT property is backed by a STRING variable (check Step 2a collection list — the variable name matches the property name), the default value is **mode-dependent**, not a single static string. In that case, derive the default from the type enum, not from the single Figma current value.
 - `INSTANCE_SWAP` → which DS component is slotted in. Add to gap batch: ask which Dart widget maps to each option.
 
+**Mode-based variant dimensions (not visible as VARIANT properties):**
+After building the root properties table, cross-reference every `VariableID` that appeared in `boundVariables` from Step 2c. Any collection with multiple modes that drives fills, gradients, or text defaults adds a **new constructor dimension** not expressible as a root property:
+
+| Collection | Modes | Dart param |
+|---|---|---|
+| `Base • AP Cards` | Shop / Meal / Spa / Lounge | `enum DsApBenefitsType` |
+| `Base • Pills surface colors` | White / Light blue / Light orange / Accent blue / Accent orange | `enum DsPillColor` |
+
+> A mode-based dimension is just as real as a VARIANT dimension — it drives completely different visual output. It is simply **invisible to `get_context_for_code_connect`** because Figma doesn't surface modes as component properties. The only way to discover it is through Step 2c reactive collection fetching.
+
 #### Step 2.5B — Nested INSTANCE traversal → reuse or build-first
+
+**Also call `figma_get_component_for_development` on the node URL** (figma-console MCP). This returns the `compositionDependencies` field listing every sub-component the node depends on — use it as the authoritative source for Bucket 2 instances. `get_context_for_code_connect` gives the property wiring; `get_component_for_development` gives the sub-component dependency graph. Both are needed.
 
 Walk **every** entry in `descendants` where `type = "INSTANCE"` — not just those with properties. Each INSTANCE is a reference to its own Figma component (`mainComponentName`). It must map to a DS asset or DS widget — never inlined by visual guessing.
 
@@ -865,8 +911,13 @@ Any change to `color_scale.dart`, `typography_scale.dart`, `spacing_scale.dart`,
 - [ ] DS reuse check completed — existing widgets checked, reuse confirmed or ruled out
 - [ ] `figma_get_text_styles` called — confirmed non-zero styles returned (hard block if zero)
 - [ ] All text styles resolved to `TypographyScale.*` statics — any `found: false` resolved via the token addition procedure before Phase 2
-- [ ] `figma_get_variables` called — confirmed non-zero variables returned (hard block if zero)
+- [ ] `figma_get_variables(format=summary)` called first — ALL collections and their modes listed (Step 2a)
+- [ ] Every multi-mode collection discovered and noted as a potential variant dimension
+- [ ] Color Semantics and Containers fetched (Step 2b)
+- [ ] After Phase 3: every unknown VariableID cross-referenced → owning collection fetched (Step 2c)
+- [ ] Mode-based variant dimensions identified and added as constructor params (not just VARIANT properties)
 - [ ] Color Semantics cross-check complete — every variable's resolved hex matches its `color_scale.dart` primitive; any mismatch fixed before Phase 3
+- [ ] `figma_get_component_for_development` called — `compositionDependencies` read for Bucket 2 INSTANCE resolution (Phase 2.5B)
 - [ ] Figma component properties extracted and mapped to Dart constructor params
 - [ ] `get_design_context` called — full response processed (not skimmed)
 

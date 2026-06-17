@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-05T10:51:37.934Z",
+  "generatedAt": "2026-06-17T17:10:51.597Z",
   "colors": [
     {
       "name": "brandPrimary",
@@ -76,8 +76,8 @@
     {
       "name": "contentSecondary",
       "dart": "colors.contentSecondary",
-      "hex": "#4B545E",
-      "tier1": "ColorPrimitives.neutralGrey700",
+      "hex": "#8C9AAA",
+      "tier1": "ColorPrimitives.neutralGrey600",
       "intent": "Supporting text — captions, subtitles, helper lines, secondary labels",
       "doNotUseFor": "Primary body copy"
     },
@@ -564,22 +564,28 @@
   ],
   "components": [
     {
+      "name": "DsApBenefits",
+      "file": "packages/ds/lib/src/components/benefits/ds_ap_benefits.dart",
+      "figmaNode": "https://www.figma.com/design/FNq7xbMPO5wM5mM4EOo2hY/Seasonal-DLS?node-id=557-81",
+      "knowledgebaseDoc": "knowledgebase/components/ds_ap_benefits.md"
+    },
+    {
       "name": "DsButton",
       "file": "packages/ds/lib/src/components/button/ds_button.dart",
       "figmaNode": "",
       "knowledgebaseDoc": "knowledgebase/components/ds_button.md"
     },
     {
-      "name": "StaysPropertyCard",
-      "file": "packages/ds/lib/src/components/stays/stays_property_card.dart",
-      "figmaNode": "https://www.figma.com/design/dZsOJpJ6G3Fs7WgrYSqt3P/Alt-Stays?node-id=2675-5319",
-      "knowledgebaseDoc": "knowledgebase/components/stays_property_card.md"
+      "name": "DsScapiaScore",
+      "file": "packages/ds/lib/src/components/rating/ds_scapia_score.dart",
+      "figmaNode": "https://www.figma.com/design/FNq7xbMPO5wM5mM4EOo2hY/Seasonal-DLS?node-id=482-244",
+      "knowledgebaseDoc": "knowledgebase/components/ds_scapia_score.md"
     },
     {
-      "name": "StaysSrpCard",
-      "file": "packages/ds/lib/src/components/stays/stays_srp_card.dart",
-      "figmaNode": "https://www.figma.com/design/dZsOJpJ6G3Fs7WgrYSqt3P/Alt-Stays?node-id=2608-5110",
-      "knowledgebaseDoc": "knowledgebase/components/stays_srp_card.md"
+      "name": "DsStayStars",
+      "file": "packages/ds/lib/src/components/rating/ds_stay_stars.dart",
+      "figmaNode": "https://www.figma.com/design/FNq7xbMPO5wM5mM4EOo2hY/Seasonal-DLS?node-id=489-1059",
+      "knowledgebaseDoc": "knowledgebase/components/ds_stay_stars.md"
     }
   ]
 }

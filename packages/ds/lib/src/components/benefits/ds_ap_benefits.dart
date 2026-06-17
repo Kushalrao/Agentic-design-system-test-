@@ -1,53 +1,117 @@
 import 'package:flutter/material.dart';
 import 'package:scapia_tokens/scapia_tokens.dart';
 
+/// The four benefit card themes driven by `Base • AP Cards` variable modes.
+enum DsApBenefitsType {
+  /// Shopping benefit — blue palette (#E0EFFF / #B5D5FA).
+  shop,
+
+  /// Dining/meal benefit — yellow palette (#FFFBE6 / #FFE58F).
+  meal,
+
+  /// Spa benefit — green palette (#F6FFED / #B7EB8F).
+  spa,
+
+  /// Airport lounge benefit — warm orange palette (#FFEAE0 / #FECBB3).
+  lounge,
+}
+
 /// The three visual states of an [DsApBenefits] card.
 enum DsApBenefitsState {
-  /// Benefit is available but not yet activated.
+  /// Benefit available, not yet activated.
   active,
 
-  /// Benefit has been activated by the user.
+  /// Benefit activated — green border + "Active" badge.
   activated,
 
-  /// Benefit is unavailable / locked.
+  /// Benefit unavailable / locked — "Inactive" badge.
   inactive,
 }
 
+/// Returns the default heading for a given [DsApBenefitsType].
+///
+/// Source: `Base • AP Cards / Heading` STRING variable per mode.
+String _defaultHeading(DsApBenefitsType type) => switch (type) {
+  DsApBenefitsType.shop   => 'Free shopping',
+  DsApBenefitsType.meal   => 'Free meals',
+  DsApBenefitsType.spa    => 'Free spa',
+  DsApBenefitsType.lounge => 'Lounge',
+};
+
+/// Returns the default reward chip text for a given [DsApBenefitsType].
+///
+/// Source: `Base • AP Cards / Benefits` STRING variable per mode.
+String _defaultRewardText(DsApBenefitsType type) => switch (type) {
+  DsApBenefitsType.shop   => 'Get ₹1,000 back',
+  DsApBenefitsType.meal   => 'Get ₹1,000 back',
+  DsApBenefitsType.spa    => 'Get ₹1,000 back',
+  DsApBenefitsType.lounge => 'Complimentary',
+};
+
+/// Card background color per type.
+/// Source: `Base • AP Cards / Bg color` COLOR variable, 4 modes.
+/// All values are Tier 1 primitives — no Tier 2 alias exists for these themed backgrounds.
+// ds-lint-ignore: no_tier1_in_widgets — Base • AP Cards themed backgrounds have no Tier 2 alias.
+// These Tier 1 primitives are used intentionally: the designer built a component-specific variable
+// collection (Base • AP Cards) with 4 modes, each aliasing a different Tier 1 color. Until Tier 2
+// semantic tokens exist for brand/card themes, Tier 1 is the correct level.
+Color _cardBg(DsApBenefitsType type) => switch (type) {
+  DsApBenefitsType.shop   => ColorPrimitives.secondaryBlue000, // ds-lint-ignore: no_tier1_in_widgets
+  DsApBenefitsType.meal   => ColorPrimitives.alertYellow000, // ds-lint-ignore: no_tier1_in_widgets
+  DsApBenefitsType.spa    => ColorPrimitives.successGreen000, // ds-lint-ignore: no_tier1_in_widgets
+  DsApBenefitsType.lounge => ColorPrimitives.primaryScapia000, // ds-lint-ignore: no_tier1_in_widgets
+};
+
+// ds-lint-ignore: no_tier1_in_widgets — Base • AP Cards / Pill bg, same rationale as _cardBg.
+Color _pillBg(DsApBenefitsType type) => switch (type) {
+  DsApBenefitsType.shop   => ColorPrimitives.secondaryBlue100, // ds-lint-ignore: no_tier1_in_widgets
+  DsApBenefitsType.meal   => ColorPrimitives.alertYellow200, // ds-lint-ignore: no_tier1_in_widgets
+  DsApBenefitsType.spa    => ColorPrimitives.successGreen200, // ds-lint-ignore: no_tier1_in_widgets
+  DsApBenefitsType.lounge => ColorPrimitives.primaryScapia100, // ds-lint-ignore: no_tier1_in_widgets
+};
+
 /// AP benefit card — 166×185 dp.
 ///
-/// Shows a benefit tile with an illustration area, heading, description,
-/// and a reward chip. Three visual states: [DsApBenefitsState.active],
-/// [DsApBenefitsState.activated] (green border + "Active" badge), and
-/// [DsApBenefitsState.inactive] ("Inactive" badge).
+/// Two independent variant axes:
+/// - [type] — drives color palette (from `Base • AP Cards` Figma variable modes)
+/// - [state] — drives border and badge (from `State` Figma VARIANT property)
+///
+/// Default [heading] and [rewardText] are inferred from [type] when omitted,
+/// matching the STRING variable defaults in the Figma `Base • AP Cards` collection.
 class DsApBenefits extends StatelessWidget {
   /// Creates a benefit card.
-  const DsApBenefits({
+  DsApBenefits({
     super.key,
-    required this.heading,
-    required this.rewardText,
+    required this.type,
     required this.state,
+    String? heading,
+    String? rewardText,
     this.description = 'Activate with one tap',
     this.onTap,
-  });
+  })  : heading    = heading    ?? _defaultHeading(type),
+        rewardText = rewardText ?? _defaultRewardText(type);
 
-  /// Primary heading, e.g. "Free shopping". Maps to Figma `Heading` property.
-  final String heading;
+  /// Card color theme. Drives background, chip gradient, and text defaults.
+  final DsApBenefitsType type;
 
-  /// Reward chip text, e.g. "Get ₹1,000 back". Maps to Figma `Benefits` property.
-  final String rewardText;
-
-  /// Visual state of the card.
+  /// Visual state. Drives border and badge visibility.
   final DsApBenefitsState state;
 
-  /// Subtitle shown below the heading.
+  /// Primary heading. Defaults to the Figma variable default for [type].
+  final String heading;
+
+  /// Reward chip text. Defaults to the Figma variable default for [type].
+  final String rewardText;
+
+  /// Subtitle below heading (static in Figma design).
   final String description;
 
   /// Called when the card is tapped. `null` disables tap feedback.
   final VoidCallback? onTap;
 
-  static const double _cardWidth   = 166; // Figma: State=Active w=166
-  static const double _cardHeight  = 185; // Figma: State=Active h=185
-  static const double _imageSize   = 66;  // Figma: Image Container 66×66
+  static const double _cardWidth  = 166; // Figma: 166dp FIXED
+  static const double _cardHeight = 185; // Figma: 185dp FIXED
+  static const double _imageSize  = 66;  // Figma: Image Container 66×66
 
   @override
   Widget build(BuildContext context) {
@@ -66,11 +130,10 @@ class DsApBenefits extends StatelessWidget {
           height: _cardHeight,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              // Gap: #E0EFFF (VariableID:557:292) — not in Color Semantics Tier 2;
-              // raw literal per user decision.
-              color: const Color(0xFFE0EFFF), // ds-lint-ignore: no_hardcoded_color
+              // Gap: Tier 1 primitive — Base • AP Cards / Bg color, no Tier 2 alias
+              color: _cardBg(type), // ds-lint-ignore: no_tier1_in_widgets
               borderRadius: BorderRadius.circular(RadiusTokens.r16),
-              // [D] Border: only in Activated state
+              // [D] Border: 2dp feedbackPositive only in activated state
               border: state == DsApBenefitsState.activated
                   ? Border.all(
                       width: 2.0, // Gap: Border/2 = 2dp; no BorderTokens class yet
@@ -83,95 +146,78 @@ class DsApBenefits extends StatelessWidget {
               borderRadius: BorderRadius.circular(RadiusTokens.r16),
               child: Stack(
                 children: [
-                  // Main content
                   Padding(
                     padding: const EdgeInsets.all(SpacingScale.spaceMdLg), // 13dp ✓
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Illustration area — Gap: shopping bag illustration
-                        // export from Figma node 550:5857 once assets pipeline is ready.
-                        const SizedBox(
-                          width:  _imageSize,
-                          height: _imageSize,
-                        ),
+                        // Illustration placeholder — Gap: export node 550:5857 from Figma
+                        const SizedBox(width: _imageSize, height: _imageSize),
+                        const SizedBox(height: SpacingScale.spaceMd), // 9dp ✓
 
-                        const SizedBox(height: SpacingScale.spaceMd), // 9dp — SPACE_BETWEEN gap ✓
-
-                        // Text + chip — fixed 84dp height matching Figma Container (550:5913).
-                        // OverflowBox + ClipRect: permits child to exceed 84dp without a
-                        // layout error; ClipRect hides any overflow visually. Needed because
-                        // system fonts in test env render larger than Lexend Deca.
+                        // Text + chip
                         SizedBox(
-                          height: 84,
+                          height: 84, // Figma Container 550:5913 = 84dp
                           child: ClipRect(
                             child: OverflowBox(
                               maxHeight: double.infinity,
                               alignment: Alignment.topLeft,
                               child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Heading + description
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  heading,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TypographyScale.shdSmall.copyWith(
-                                    color: colors.contentPrimary, // contentPrimary ✓
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    heading,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TypographyScale.shdSmall.copyWith(
+                                      color: colors.contentPrimary,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: SpacingScale.space2xs), // 2dp ✓
-                                Text(
-                                  description,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TypographyScale.pSmall.copyWith(
-                                    color: colors.contentSecondary, // contentSecondary ✓
+                                  const SizedBox(height: SpacingScale.space2xs), // 2dp ✓
+                                  Text(
+                                    description,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TypographyScale.pSmall.copyWith(
+                                      color: colors.contentSecondary,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: SpacingScale.spaceMd), // 9dp ✓
+                                  _RewardChip(
+                                    text:    rewardText,
+                                    pillBg:  _pillBg(type),
+                                    cardBg:  _cardBg(type),
+                                    colors:  colors,
+                                  ),
+                                ],
+                              ),
                             ),
-
-                            const SizedBox(height: SpacingScale.spaceMd), // 9dp ✓
-
-                            // Reward chip
-                            _RewardChip(
-                              text:   rewardText,
-                              colors: colors,
-                            ),
-                          ],
+                          ),
                         ),
-                        ))), // end OverflowBox + ClipRect + SizedBox(84)
                       ],
                     ),
                   ),
 
-                  // [D] Activated badge — absolute top-right
+                  // [D] Activated badge
                   if (showActiveTag)
                     Positioned(
-                      top:   0,
-                      right: 0,
+                      top: 0, right: 0,
                       child: _StateTag(
-                        label:    'Active',
-                        bgColor:  colors.feedbackPositive, // Gap: #389E0D → feedbackPositive per color.md
+                        label:     'Active',
+                        bgColor:   colors.feedbackPositive,
                         textColor: colors.backgroundPrimary,
                       ),
                     ),
 
-                  // [D] Inactive badge — absolute top-right
+                  // [D] Inactive badge
                   if (showInactiveTag)
                     Positioned(
-                      top:   0,
-                      right: 0,
+                      top: 0, right: 0,
                       child: _StateTag(
-                        label:    'Inactive',
-                        bgColor:  colors.backgroundTertiary, // backgroundTertiary ✓
+                        label:     'Inactive',
+                        bgColor:   colors.backgroundTertiary,
                         textColor: colors.contentPrimary,
                       ),
                     ),
@@ -185,36 +231,43 @@ class DsApBenefits extends StatelessWidget {
   }
 }
 
-// ─── Reward chip ───────────────────────────────────────────────────────────────
+// ─── Reward chip ──────────────────────────────────────────────────────────────
 
 class _RewardChip extends StatelessWidget {
-  const _RewardChip({required this.text, required this.colors});
+  const _RewardChip({
+    required this.text,
+    required this.pillBg,
+    required this.cardBg,
+    required this.colors,
+  });
 
   final String     text;
+  final Color      pillBg;  // opaque gradient stop — per type
+  final Color      cardBg;  // transparent gradient stop — per type
   final ColorScale colors;
 
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        // Gap: LinearGradient — #B5D5FA (VariableID:557:494) → transparent #E0EFFF;
-        // no Tier 2 tokens for either stop; raw per user decision.
-        gradient: const LinearGradient( // ds-lint-ignore: no_hardcoded_color
+        // Gap: LinearGradient — Base • AP Cards / Pill bg per mode → transparent card bg.
+        // Tier 1 only; no Tier 2 alias. Raw per user decision.
+        gradient: LinearGradient( // ds-lint-ignore: no_hardcoded_color
           begin: Alignment.centerLeft,
           end:   Alignment.centerRight,
           colors: [
-            Color(0xFFB5D5FA), // ds-lint-ignore: no_hardcoded_color — Gap: VariableID:557:494, no Tier 2 token
-            Color(0x00E0EFFF), // ds-lint-ignore: no_hardcoded_color — Gap: VariableID:557:292, no Tier 2 token
+            pillBg,
+            cardBg.withAlpha(0), // transparent version of card bg
           ],
         ),
-        borderRadius: BorderRadius.circular(RadiusTokens.r8), // Radius/8 ✓
+        borderRadius: BorderRadius.circular(RadiusTokens.r8),
       ),
       child: Padding(
         padding: const EdgeInsets.all(SpacingScale.spaceSm), // 7dp ✓
         child: Text(
           text,
           style: TypographyScale.pExtraSmall.copyWith(
-            color: colors.contentPrimary, // contentPrimary ✓
+            color: colors.contentPrimary,
           ),
         ),
       ),
@@ -222,7 +275,7 @@ class _RewardChip extends StatelessWidget {
   }
 }
 
-// ─── State tag (Active / Inactive) ─────────────────────────────────────────────
+// ─── State tag ────────────────────────────────────────────────────────────────
 
 class _StateTag extends StatelessWidget {
   const _StateTag({
@@ -246,8 +299,8 @@ class _StateTag extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: SpacingScale.spaceMd,   // 9dp ✓
-          vertical:   SpacingScale.space2xs,  // 2dp ✓
+          horizontal: SpacingScale.spaceMd,  // 9dp ✓
+          vertical:   SpacingScale.space2xs, // 2dp ✓
         ),
         child: Text(
           label,

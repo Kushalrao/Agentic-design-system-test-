@@ -13,74 +13,63 @@ Widget _wrap(Widget child) => MaterialApp(
 final dsApBenefitsComponent = WidgetbookComponent(
   name: 'DsApBenefits',
   useCases: [
+    // ── Interactive ────────────────────────────────────────────────────────
     WidgetbookUseCase(
       name: 'Interactive',
       builder: (context) {
-        final stateIndex = context.knobs.int.slider(
+        final typeIdx = context.knobs.int.slider(
+          label: 'Type (0=shop 1=meal 2=spa 3=lounge)',
+          initialValue: 0, min: 0, max: 3,
+        );
+        final stateIdx = context.knobs.int.slider(
           label: 'State (0=active 1=activated 2=inactive)',
-          initialValue: 0,
-          min: 0,
-          max: 2,
-        );
-        final state = DsApBenefitsState.values[stateIndex];
-        final heading = context.knobs.string(
-          label: 'Heading',
-          initialValue: 'Free shopping',
-        );
-        final reward = context.knobs.string(
-          label: 'Reward text',
-          initialValue: 'Get ₹1,000 back',
-        );
-        final tappable = context.knobs.boolean(
-          label: 'Tappable',
-          initialValue: true,
+          initialValue: 0, min: 0, max: 2,
         );
         return _wrap(DsApBenefits(
-          heading:    heading,
-          rewardText: reward,
-          state:      state,
-          onTap:      tappable ? () {} : null,
+          type:  DsApBenefitsType.values[typeIdx],
+          state: DsApBenefitsState.values[stateIdx],
+          onTap: () {},
         ));
       },
     ),
+
+    // ── All 4 types — default state ────────────────────────────────────────
     WidgetbookUseCase(
-      name: 'Active — default',
-      builder: (context) => _wrap(const DsApBenefits(
-        heading:    'Free shopping',
-        rewardText: 'Get ₹1,000 back',
-        state:      DsApBenefitsState.active,
+      name: 'Shop — active',
+      builder: (context) => _wrap(DsApBenefits(
+        type: DsApBenefitsType.shop, state: DsApBenefitsState.active,
       )),
     ),
     WidgetbookUseCase(
-      name: 'Activated — green border + badge',
-      builder: (context) => _wrap(const DsApBenefits(
-        heading:    'Free shopping',
-        rewardText: 'Get ₹1,000 back',
-        state:      DsApBenefitsState.activated,
+      name: 'Meal — active',
+      builder: (context) => _wrap(DsApBenefits(
+        type: DsApBenefitsType.meal, state: DsApBenefitsState.active,
       )),
     ),
     WidgetbookUseCase(
-      name: 'Inactive — locked',
-      builder: (context) => _wrap(const DsApBenefits(
-        heading:    'Free shopping',
-        rewardText: 'Get ₹1,000 back',
-        state:      DsApBenefitsState.inactive,
+      name: 'Spa — active',
+      builder: (context) => _wrap(DsApBenefits(
+        type: DsApBenefitsType.spa, state: DsApBenefitsState.active,
       )),
     ),
     WidgetbookUseCase(
-      name: 'Edge — long heading',
-      builder: (context) => _wrap(const DsApBenefits(
-        heading:    'International lounge access worldwide',
-        rewardText: 'Unlimited visits',
-        state:      DsApBenefitsState.active,
+      name: 'Lounge — active',
+      builder: (context) => _wrap(DsApBenefits(
+        type: DsApBenefitsType.lounge, state: DsApBenefitsState.active,
+      )),
+    ),
+
+    // ── Activated + Inactive states ────────────────────────────────────────
+    WidgetbookUseCase(
+      name: 'Shop — activated',
+      builder: (context) => _wrap(DsApBenefits(
+        type: DsApBenefitsType.shop, state: DsApBenefitsState.activated,
       )),
     ),
     WidgetbookUseCase(
-      name: 'Edge — long reward text',
-      builder: (context) => _wrap(const DsApBenefits(
-        heading:    'Cashback',
-        rewardText: 'Get up to ₹10,000 back per month',
-        state:      DsApBenefitsState.activated,
+      name: 'Shop — inactive',
+      builder: (context) => _wrap(DsApBenefits(
+        type: DsApBenefitsType.shop, state: DsApBenefitsState.inactive,
       )),
     ),
   ],
