@@ -5,6 +5,26 @@ Invoked as: `/manage-tokens [sync | add <description> | validate]`
 
 ---
 
+## First clone / initial setup
+
+If you've just cloned the repo and the token Dart files look unpopulated (very few constants, or `tools/tokens/figma-variables.json` is missing), run sync before doing anything else:
+
+```
+/manage-tokens sync
+```
+
+This pulls all variable values from Figma, generates the Tier 1 + Tier 2 Dart files, and regenerates the DS MCP snapshot. The `implement-figma-component` skill will block with an error if it detects stale or missing token files — this is the fix.
+
+**After sync completes, verify:**
+```bash
+dart analyze packages/tokens/
+flutter test packages/tokens/
+```
+
+Both must pass before starting any component work.
+
+---
+
 ## Why this skill exists
 
 The token system is the foundation every DS component builds on. Three failure modes recur without a defined process:

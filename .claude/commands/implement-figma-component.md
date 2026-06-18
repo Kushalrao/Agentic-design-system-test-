@@ -75,6 +75,26 @@ Read these files before doing anything else:
 - `packages/tokens/lib/src/opacity_tokens.dart`
 - `packages/tokens/lib/src/button_tokens.dart`
 
+**⚠ First-clone / stale-token check — run before reading the files above:**
+
+Check that the token files are populated and current. Scan for these failure signals:
+- `color_scale.dart` has fewer than 5 `static const` fields
+- `typography_scale.dart` has fewer than 10 `TextStyle` statics
+- `tools/tokens/figma-variables.json` does not exist
+- `tools/ds-mcp/ds-snapshot.json` does not exist
+
+If **any** signal is true → the repo is in a first-clone or stale state. Stop and run the token pipeline before proceeding:
+
+```
+TOKEN SETUP REQUIRED
+The Dart token files are missing or unpopulated.
+Run /manage-tokens sync first to pull the latest variable values
+from Figma and populate the token files.
+Then re-run /implement-figma-component.
+```
+
+If the files are populated and look reasonable → proceed. The Phase 2 cross-check will catch any individual value mismatches later.
+
 ---
 
 ### Phase 0.5 — DS reuse check (do not skip)
@@ -111,37 +131,17 @@ Call **both** of these on every new component — they answer different question
 
 For each style returned, resolve to a Dart static using the **ds MCP**: `get_typography_style(figmaName)`.
 
-If the ds MCP returns `found: false` for a style → it doesn't exist in `TypographyScale` yet. **Stop and follow this procedure before continuing:**
+If the ds MCP returns `found: false` for a style → it doesn't exist in `TypographyScale` yet. **Stop and run `/manage-tokens add` before continuing:**
 
-#### Typography token addition procedure
+```
+TOKEN ADDITION REQUIRED
+Text style "{figmaName}" has no TypographyScale static.
+Run: /manage-tokens add "{figmaName}" typography
+This will follow the full Foundation → TypographyScale → tests → snapshot procedure.
+Return here once /manage-tokens add confirms `found: true`.
+```
 
-1. **Read `packages/tokens/lib/src/foundation.dart`** — check whether the required `fontSize` and `fontLineheight` primitives already exist.
-   - If missing, add them: `static const double fontSizeN = N;` and `static const double fontLineheightN = N;`
-
-2. **Add the `TextStyle` static to `packages/tokens/lib/src/typography_scale.dart`:**
-   ```dart
-   /// N / Weight / lh N — [when to use this style].
-   static const TextStyle pExtraSmall = TextStyle(
-     fontFamily: Foundation.fontFamilyLexendDeca,
-     fontSize:   Foundation.fontSizeN,
-     fontWeight: FontWeight.wNNN,
-     height:     Foundation.fontLineheightN / Foundation.fontSizeN,
-     leadingDistribution: TextLeadingDistribution.even,
-     decoration:            TextDecoration.none,
-   );
-   ```
-   Also add the raw numeric constants in the "Raw numeric tokens" section:
-   ```dart
-   static const double pExtraSmallSize       = Foundation.fontSizeN;
-   static const double pExtraSmallWeight     = Foundation.fontWeightRegular;
-   static const double pExtraSmallLineheight = Foundation.fontLineheightN;
-   ```
-
-3. **Run `flutter test packages/tokens/`** — the tier contract test must pass. If it fails, a required primitive reference is missing.
-
-4. **Run `melos run ds-mcp:generate`** — regenerates `tools/ds-mcp/ds-snapshot.json` so `get_typography_style` returns the new static going forward.
-
-5. **Verify** — call `get_typography_style(figmaName)` again. It must now return `found: true` before Phase 2 can start.
+> The full procedure (Foundation primitives → TypographyScale static → raw numeric constants → tier contract test → ds-mcp:generate → verify) lives in `/manage-tokens add`. Do not duplicate it inline here — a single source of truth prevents divergence.
 
 ---
 
@@ -214,14 +214,18 @@ For each Color Semantics variable:
 2. Call `check_token(hex)` on the ds MCP
 3. Compare the returned Dart token's underlying primitive hex against the Figma resolved hex
 4. If they **match** → ✓ proceed
-5. If they **diverge** → this is a bug in `color_scale.dart`, not a component gap. **Stop and fix it:**
-   - Update the primitive reference in `color_scale.dart` (e.g. `neutralGrey700` → `neutralGrey600`)
-   - Update `knowledgebase/foundations/color.md` with the correct hex
-   - Run `flutter test packages/tokens/` to verify the alias chain
-   - Run `flutter test packages/ds/test/ --update-goldens` to regenerate all affected goldens
-   - Visually confirm each affected golden renders correctly
+5. If they **diverge** → this is a bug in `color_scale.dart`, not a component gap. **Stop and run `/manage-tokens sync` before continuing:**
+   ```
+   TOKEN BUG DETECTED
+   Color Semantics / {variable name} resolves to {Figma hex} in Figma
+   but color_scale.dart maps it to {wrong primitive} = {code hex}.
+   Run: /manage-tokens sync
+   It will surface this as a Tier 2 changed-value diff, apply the fix,
+   regenerate affected goldens, and run the cross-check on all other fields.
+   Return here once /manage-tokens sync confirms all fields pass.
+   ```
 
-> This check exists because wrong primitive references in `color_scale.dart` affect every component using that token and are invisible to `dart analyze` and the DS lint scanner. Example: `contentSecondary` was mapped to `neutralGrey700` (#4B545E) when Figma's `Surface/Content/Secondary` resolves to `neutralGrey600` (#8C9AAA) — discovered only when a component's label color looked wrong in widgetbook.
+> This check exists because wrong primitive references in `color_scale.dart` affect every component using that token and are invisible to `dart analyze` and the DS lint scanner. Example: `contentSecondary` was mapped to `neutralGrey700` (#4B545E) when Figma's `Surface/Content/Secondary` resolves to `neutralGrey600` (#8C9AAA) — discovered only when a component's label color looked wrong in widgetbook. `/manage-tokens sync` would have caught and fixed this automatically.
 
 ---
 
